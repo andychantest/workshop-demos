@@ -22,10 +22,10 @@ const LS_KEY = 'workshop-lang';
 const ZH_HANT = {
   meta: {
     title: 'Workshop Demo｜工作坊示範集',
-    desc: '五個純前端、可現場直接操作的教學 Demo：履歷頁、單字學習圖鑑、學習儀表板、午餐轉盤、班級旅行企劃。'
+    desc: '純前端、可現場直接操作的教學 Demo：履歷頁、單字學習圖鑑、學習儀表板、午餐轉盤、班級旅行企劃、k-NN 分類器視覺化。'
   },
   eyebrow: '工作坊現場可操作 · 無後端 · 資料存於瀏覽器',
-  lede: '五個純前端 Demo，全部用原生 HTML、CSS、JavaScript 寫成。點擊任何一張卡片即可在<strong>新分頁</strong>開啟，直接動手操作。',
+  lede: 'Demo 全部用原生 HTML、CSS、JavaScript 寫成。點擊任何一張卡片即可在<strong>新分頁</strong>開啟，直接動手操作。',
   stat1L: '示範數量', stat2L: '後端服務', stat3L: '建置步驟',
   sectionTitle: '選擇一個開始示範',
   sectionHint: '點擊卡片 → 新分頁開啟 Demo，關閉分頁即回到此頁',
@@ -52,10 +52,10 @@ const ZH_HANT = {
 const ZH_HANS = {
   meta: {
     title: 'Workshop Demo｜工作坊示范集',
-    desc: '五个纯前端、可现场直接操作的教学 Demo：简历页、单词学习图鉴、学习仪表板、午餐转盘、班级旅行企划。'
+    desc: '纯前端、可现场直接操作的教学 Demo：简历页、单词学习图鉴、学习仪表板、午餐转盘、班级旅行企划、k-NN 分类器可视化。'
   },
   eyebrow: '工作坊现场可操作 · 无后端 · 资料存在浏览器',
-  lede: '五个纯前端 Demo，全部用原生 HTML、CSS、JavaScript 写成。点击任何一张卡片即可在<strong>新标签页</strong>打开，直接动手操作。',
+  lede: 'Demo 全部用原生 HTML、CSS、JavaScript 写成。点击任何一张卡片即可在<strong>新标签页</strong>打开，直接动手操作。',
   stat1L: '示范数量', stat2L: '后端服务', stat3L: '构建步骤',
   sectionTitle: '选择一个开始示范',
   sectionHint: '点击卡片 → 新标签页打开 Demo，关闭标签页即回到本页',
@@ -82,10 +82,10 @@ const ZH_HANS = {
 const EN = {
   meta: {
     title: 'Workshop Demo · Live Showcase',
-    desc: 'Five live-runnable pure-frontend demos: résumé page, vocabulary codex, learning analytics dashboard, lunch spinner and class trip planner.'
+    desc: 'Live-runnable pure-frontend demos: résumé page, vocabulary codex, learning analytics dashboard, lunch spinner, class trip planner and an interactive k-NN classifier.'
   },
   eyebrow: 'Live at the workshop · No backend · Data stays in your browser',
-  lede: 'Five demos built entirely with plain HTML, CSS and JavaScript. Click any card to open it in a <strong>new tab</strong> and try it yourself.',
+  lede: 'Demos built entirely with plain HTML, CSS and JavaScript. Click any card to open it in a <strong>new tab</strong> and try it yourself.',
   stat1L: 'Demos', stat2L: 'Backend', stat3L: 'Build Step',
   sectionTitle: 'Pick one to start',
   sectionHint: 'Click a card → opens in a new tab · close it to come back here',
@@ -238,3 +238,7 @@ document.getElementById('langSwitch').addEventListener('click', e => {
 
 currentLang = readLang();
 applyText();
+
+// 示範數量一律由 DEMOS 推導，避免卡片增減時統計數字過期
+document.getElementById('statDemos').textContent =
+  String(DEMOS.length).padStart(2, '0');

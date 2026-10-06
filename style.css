@@ -263,8 +263,8 @@ body {
 
 /* ---------- 卡片格線 ---------- */
 
-/* grid-auto-rows: 1fr 讓兩列等高 —— 即使 5 張卡片分成 3+2 兩列，
-   所有卡片仍為完全相同的高度 */
+/* grid-auto-rows: 1fr 讓每一列等高 —— 無論卡片數量排成幾列幾行，
+   所有卡片仍為完全相同的高度與寬度 */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(292px, 1fr));

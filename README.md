@@ -1,6 +1,6 @@
 # Workshop Demo
 
-工作坊現場示範用網站。五個純前端（原生 HTML / CSS / JavaScript，零框架、零後端、零建置步驟）Demo 的入口封面頁。**支援繁體中文／簡體中文／English 三語介面**，右上角可即時切換，選擇會記住。
+工作坊現場示範用網站。純前端（原生 HTML / CSS / JavaScript，零框架、零後端、零建置步驟）Demo 的入口封面頁。**支援繁體中文／簡體中文／English 三語介面**，右上角可即時切換，選擇會記住。
 
 **線上版本：** <https://andychantest.github.io/workshop-demos/>
 

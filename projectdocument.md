@@ -10,7 +10,7 @@
 
 ### 為什麼封面頁與各 Demo 共用同一個 repo
 
-封面頁是靜態檔案，與 5 個 Demo 放在一起部署，才能用相對路徑互相連結，不需要處理跨網域、也不用維護兩份部署。GitHub Pages 與 Vercel 都能直接部署此結構。
+封面頁是靜態檔案，與 6 個 Demo 放在一起部署，才能用相對路徑互相連結，不需要處理跨網域、也不用維護兩份部署。GitHub Pages 與 Vercel 都能直接部署此結構。
 
 ## 專案結構
 
@@ -206,3 +206,4 @@ Demo/
 | `20261006b` | 修正 `Syne 800` 大標造成的橫向捲動（字級改為 `min(8.2vw, 100px)`）、縮小 Hero 高度 |
 | `20261006c` | 新增繁中／簡中／English 三語介面（`localStorage` 記憶）；全面放大字級；卡片改為等高排列（`grid-auto-rows: 1fr`、移除交錯位移、標籤列 `margin-top: auto` 對齊） |
 | `20261006d` | 新增 Demo 06「k-NN 分類器視覺化」（`Scratch Method/`，連結 `Scratch%20Method/index.html`）；同步補上三個語言包文案。修正該 Demo 在 ≤760px 視窗的橫向溢出（`#main-container` 改為垂直堆疊、SVG 改 `width:100%`） |
+| `20261006e` | 移除文案中寫死的 Demo 數量（原「五個／Five」），改為不帶數量的敘述；`meta.desc` 補上 k-NN。Hero 的「示範數量」改為由 `DEMOS.length` 推導（`#statDemos`），卡片增減不再需手動改 |
