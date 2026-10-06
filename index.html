@@ -7,8 +7,8 @@
 <meta name="description" content="五個純前端、可現場直接操作的教學 Demo：履歷頁、單字學習圖鑑、學習儀表板、午餐轉盤、班級旅行企劃。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Chivo+Mono:wght@300;400;500&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261006b">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Chivo+Mono:wght@300;400;500&family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=20261006c">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2308090B'/%3E%3Cpath d='M8 10h16v3H11v3h10v3H11v6H8z' fill='%23FF7A18'/%3E%3C/svg%3E">
 </head>
 <body>
@@ -21,38 +21,35 @@
       <span class="masthead__glyph">WD</span>
       <span class="masthead__dot"></span>
     </div>
-    <nav class="masthead__nav">
-      <span class="masthead__item">Pure Frontend</span>
-      <span class="masthead__item">Live Demos</span>
-      <span class="masthead__item">Click&nbsp;to&nbsp;Open</span>
+    <nav class="masthead__nav" id="langSwitch" aria-label="Language / 語言">
+      <button type="button" class="langbtn" data-lang="zh-Hant" aria-pressed="true">繁中</button>
+      <button type="button" class="langbtn" data-lang="zh-Hans" aria-pressed="false">简中</button>
+      <button type="button" class="langbtn" data-lang="en" aria-pressed="false">EN</button>
     </nav>
   </header>
 
   <section class="hero">
-    <p class="hero__eyebrow"><span class="tick"></span>工作坊現場可操作 · 無後端 · 資料存於瀏覽器</p>
+    <p class="hero__eyebrow"><span class="tick"></span><span data-i18n="eyebrow"></span></p>
     <h1 class="hero__title">Workshop<br><em>Demo</em></h1>
-    <p class="hero__lede">
-      五個純前端 Demo，全部用原生 HTML、CSS、JavaScript 寫成。
-      點擊任何一張卡片即可在<strong>新分頁</strong>開啟，直接動手操作。
-    </p>
+    <p class="hero__lede" data-i18n-html="lede"></p>
     <dl class="hero__stats">
-      <div class="stat"><dt>DEMOS</dt><dd>05</dd></div>
-      <div class="stat"><dt>BACKEND</dt><dd>00</dd></div>
-      <div class="stat"><dt>BUILD STEP</dt><dd>NONE</dd></div>
+      <div class="stat"><dt data-i18n="stat1L"></dt><dd>05</dd></div>
+      <div class="stat"><dt data-i18n="stat2L"></dt><dd>00</dd></div>
+      <div class="stat"><dt data-i18n="stat3L"></dt><dd>NONE</dd></div>
     </dl>
   </section>
 
   <main>
     <div class="section-head">
-      <h2 class="section-head__title">選擇一個開始示範</h2>
-      <p class="section-head__hint">點擊卡片 → 新分頁開啟 Demo，關閉分頁即回到此頁</p>
+      <h2 class="section-head__title" data-i18n="sectionTitle"></h2>
+      <p class="section-head__hint" data-i18n="sectionHint"></p>
     </div>
     <div class="grid" id="grid"></div>
   </main>
 
   <footer class="footer">
-    <p>所有 Demo 皆以<strong>相對路徑</strong>載入，離線、內網、投影機皆可運作。</p>
-    <p class="footer__sig">Workshop Demo · 純前端教學示範集</p>
+    <p data-i18n-html="footer1"></p>
+    <p class="footer__sig" data-i18n="footerSig"></p>
   </footer>
 
 </div>
@@ -67,12 +64,12 @@
     <p class="card__subtitle"></p>
     <p class="card__desc"></p>
     <ul class="card__tags"></ul>
-    <span class="card__cta">開啟 Demo
+    <span class="card__cta"><span data-i18n="cta"></span>
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 12L12 4M6 4h6v6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </span>
   </a>
 </template>
 
-<script src="app.js?v=20261006b"></script>
+<script src="app.js?v=20261006c"></script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 # Workshop Demo
 
-工作坊現場示範用網站。五個純前端（原生 HTML / CSS / JavaScript，零框架、零後端、零建置步驟）Demo 的入口封面頁。
+工作坊現場示範用網站。五個純前端（原生 HTML / CSS / JavaScript，零框架、零後端、零建置步驟）Demo 的入口封面頁。**支援繁體中文／簡體中文／English 三語介面**，右上角可即時切換，選擇會記住。
 
 **線上版本：** <https://andychantest.github.io/workshop-demos/>
 
@@ -20,7 +20,7 @@
 Demo/
 ├── index.html      # 封面頁（本頁）
 ├── style.css       # 封面頁樣式
-├── app.js          # 封面頁卡片資料 DEMOS[] 與渲染邏輯
+├── app.js          # I18N 三語文案表 + DEMOS 資料 + 卡片渲染
 ├── DemoCV/         # 01 個人履歷
 ├── english-vocab-demo/  # 02 單字學習圖鑑
 ├── LA Project/     # 03 學習儀表板
@@ -42,20 +42,22 @@ python -m http.server 8000
 
 ## 新增 Demo 到封面頁
 
-在 `app.js` 的 `DEMOS` 陣列加一筆即可，封面頁會自動渲染卡片：
+有兩個地方要加：
+
+**① `app.js` 的 `DEMOS`** —— 放與語言無關的資料：
 
 ```js
-{
-  href: 'my-new-demo/index.html',  // 必須用相對路徑
-  label: 'Category',
-  title: '中文主標',
-  subtitle: 'English Subtitle',
-  icon: '🚀',
-  accent: '#ff7a18',               // 卡片主題色
-  tags: ['Tag1', 'Tag2'],
-  desc: '一句話說明這個 Demo 解決什麼問題。'
-}
+{ href: 'my-new-demo/index.html', icon: '🚀', accent: '#ff7a18' }  // href 必須用相對路徑
 ```
+
+**② `app.js` 的 `I18N`** —— 三個語言包（`ZH_HANT` / `ZH_HANS` / `EN`）的 `demos[]` 各加一筆，**順序要與 `DEMOS` 一致**：
+
+```js
+{ label: '分類', title: '中文主標', subtitle: 'English Subtitle',
+  tags: ['Tag1', 'Tag2'], desc: '一句話說明這個 Demo 解決什麼問題。' }
+```
+
+改完存檔，封面頁會自動多出一張等高的卡片。
 
 > `href` 必須使用**相對路徑**。若改成 `/my-demo/index.html`，在 GitHub Pages 的
 > `https://andychantest.github.io/workshop-demos/` 子路徑部署下會導向錯誤位置。
@@ -64,7 +66,9 @@ python -m http.server 8000
 
 ## 設計說明
 
-封面頁採「Workshop Console」工業控制台風格：近黑底 `#08090B` 配上藍圖細格與 SVG 雜訊底片，主色為訊號琥珀 `#FF7A18` 與電光青 `#3DE0D0`，標題用 Syne、標籤用 Chivo Mono、中文內文用 Noto Sans TC。格線採交錯位移形成斜向節奏，卡片 hover 時頂部光掃、邊框發光並微微上浮。
+封面頁採「Workshop Console」工業控制台風格：近黑底 `#08090B` 配上藍圖細格與 SVG 雜訊底片，主色為訊號琥珀 `#FF7A18` 與電光青 `#3DE0D0`，標題用 Syne、標籤用 Chivo Mono、中文內文用 Noto Sans TC（簡中自動切換為 Noto Sans SC）。格線以 `grid-auto-rows: 1fr` 讓 3+2 兩列等高，卡片的下半部靠 `margin-top: auto` 對齊，**五張方塊完全同高同寬**。hover 時頂部光掃、邊框發光並微微上浮。
+
+字級已放大：卡片標題 25px、卡片說明 16.5px、Hero 內文最大 21px、統計數字 42px。
 
 ## 授權
 
