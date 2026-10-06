@@ -1,0 +1,6 @@
+# 開發過程產物，不進公開 repo
+backups/
+History/
+.DS_Store
+Thumbs.db
+*.log

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>英文單字學習圖鑑</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="balloons" aria-hidden="true">
+    <div class="balloon" style="left:5%;background:#FF1744;animation-delay:0s;animation-duration:9s;"></div>
+    <div class="balloon" style="left:16%;background:#FF9100;animation-delay:2s;animation-duration:11s;"></div>
+    <div class="balloon" style="left:27%;background:#FFD600;animation-delay:0.8s;animation-duration:8s;"></div>
+    <div class="balloon" style="left:40%;background:#00E676;animation-delay:3s;animation-duration:12s;"></div>
+    <div class="balloon" style="left:52%;background:#2979FF;animation-delay:1.5s;animation-duration:10s;"></div>
+    <div class="balloon" style="left:64%;background:#D500F7;animation-delay:2.5s;animation-duration:9.5s;"></div>
+    <div class="balloon" style="left:76%;background:#FF4081;animation-delay:0.5s;animation-duration:11.5s;"></div>
+    <div class="balloon" style="left:88%;background:#FF1744;animation-delay:3.5s;animation-duration:8.5s;"></div>
+  </div>
+  <div class="stars" aria-hidden="true">
+    <div class="star" style="top:6%;left:8%;color:#FFD600;font-size:18px;animation-delay:0.2s;">✦</div>
+    <div class="star" style="top:12%;left:22%;color:#FFFFFF;font-size:14px;animation-delay:1s;">✦</div>
+    <div class="star" style="top:4%;left:38%;color:#FF80AB;font-size:22px;animation-delay:0.5s;">★</div>
+    <div class="star" style="top:15%;left:55%;color:#FFD600;font-size:16px;animation-delay:1.8s;">✦</div>
+    <div class="star" style="top:8%;left:70%;color:#4FC3F7;font-size:20px;animation-delay:0.8s;">★</div>
+    <div class="star" style="top:18%;left:82%;color:#FFFFFF;font-size:12px;animation-delay:2.5s;">✦</div>
+    <div class="star" style="top:3%;left:50%;color:#FFD600;font-size:10px;animation-delay:1.2s;">✦</div>
+    <div class="star" style="top:20%;left:32%;color:#FF80AB;font-size:15px;animation-delay:3s;">★</div>
+    <div class="star" style="top:2%;left:65%;color:#FFFFFF;font-size:8px;animation-delay:0.3s;">✦</div>
+    <div class="star" style="top:10%;left:92%;color:#FFD600;font-size:13px;animation-delay:1.5s;">✦</div>
+  </div>
+  <div class="bg-stars" aria-hidden="true"></div>
+  <header>
+    <h1>📚 英文單字學習圖鑑</h1>
+    <p class="subtitle">English Vocabulary Learning Cards</p>
+  </header>
+
+  <main>
+    <aside class="sidebar">
+      <div class="filter-section progress-section">
+        <h3>🌟 學習進度</h3>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <p class="progress-text" id="progressText">已學會 0 / 0 個單字</p>
+        <button type="button" class="reset-btn" id="resetBtn">↺ 重設進度</button>
+      </div>
+      <div class="filter-section">
+        <h3>🔍 搜尋</h3>
+        <input type="text" id="searchInput" placeholder="輸入單字或中文...">
+      </div>
+      <div class="filter-section">
+        <h3>🎯 難度區間</h3>
+        <select id="levelFilter">
+          <option value="all">全部</option>
+          <option value="1-3">初級 Lv. 1 ~ 3</option>
+          <option value="4-6">中級 Lv. 4 ~ 6</option>
+          <option value="7-9">高級 Lv. 7 ~ 9</option>
+        </select>
+      </div>
+      <div class="filter-section">
+        <h3>🏷️ 詞性</h3>
+        <select id="typeFilter">
+          <option value="all">全部</option>
+          <option value="名詞">名詞</option>
+          <option value="動詞">動詞</option>
+          <option value="形容詞">形容詞</option>
+        </select>
+      </div>
+      <div class="filter-section">
+        <h3>✅ 學習狀態</h3>
+        <select id="statusFilter">
+          <option value="all">全部</option>
+          <option value="undone">未學會</option>
+          <option value="done">已學會</option>
+        </select>
+      </div>
+    </aside>
+
+    <section class="content">
+      <div class="word-grid" id="wordGrid">
+        <!-- 由 JavaScript 動態產生 -->
+      </div>
+    </section>
+  </main>
+
+  <!-- 單字詳細彈窗 -->
+  <div class="modal" id="detailModal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeDetail()">&times;</button>
+      <div id="detailBody"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

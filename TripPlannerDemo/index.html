@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trip Planner｜班級旅行企劃</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Karla:ital,wght@0,400;0,700;1,400&family=Patrick+Hand&display=swap" rel="stylesheet">
+<style>
+/* ============ 設計系統 ============ */
+:root{
+  --paper:#f6efe1; --board:#f1e9d7; --card:#fffdf5;
+  --ink:#3a3730; --muted:#8b8474; --faint:#b7ae99;
+  --line:#e3d9c2; --washi:rgba(255,255,255,.5);
+  --yellow:#ffe9a8; --pink:#ffd0cd; --mint:#cfe8c9; --sky:#c6e2f2; --lav:#ded1f0;
+  --coral:#ff7a59; --corald:#e86240; --teal:#2e8b8b;
+  --shadow:0 2px 6px rgba(90,75,40,.14), 0 10px 22px rgba(90,75,40,.10);
+  --f-h: 'Caveat', 'Segoe Script', cursive;
+  --f-n: 'Patrick Hand', 'Segoe Script', cursive;
+  --f-b: 'Karla', system-ui, sans-serif;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%;}
+body{
+  font-family:var(--f-b); color:var(--ink);
+  background:
+    radial-gradient(circle, rgba(90,75,40,.06) 1px, transparent 1.5px) 0 0/22px 22px,
+    var(--paper);
+  min-height:100vh;
+  display:flex; flex-direction:column;
+  overflow:hidden;
+}
+
+/* ============ Topbar ============ */
+.topbar{
+  display:flex; align-items:center; gap:12px;
+  padding:10px 18px;
+  background:var(--board);
+  border-bottom:2px dashed var(--line);
+  flex-wrap:wrap; z-index:20;
+}
+.brand{display:flex; align-items:center; gap:10px; margin-right:6px;}
+.brand .logo{
+  width:38px;height:38px;border-radius:10px;background:var(--coral);
+  display:grid;place-items:center;transform:rotate(-3deg);box-shadow:var(--shadow);
+}
+.brand h1{font-family:var(--f-h); font-size:28px; line-height:1; font-weight:700;}
+.brand small{display:block; font-family:var(--f-b); font-size:11px; color:var(--muted); letter-spacing:.4px;}
+.spacer{flex:1;}
+.tools{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+
+.btn{
+  font-family:var(--f-b); font-size:13px; font-weight:700;
+  border:none; cursor:pointer; border-radius:10px; padding:8px 12px;
+  background:var(--card); color:var(--ink);
+  border:1.5px solid var(--line); box-shadow:0 1px 2px rgba(0,0,0,.05);
+  transition:transform .12s, box-shadow .12s, background .12s;
+}
+.btn:hover{transform:translateY(-1px) rotate(-.3deg); box-shadow:var(--shadow);}
+.btn:active{transform:translateY(0);}
+.btn.coral{background:var(--coral); color:#fff; border-color:transparent;}
+.btn.ghost{background:transparent; border-color:var(--line);}
+.btn.sm{padding:5px 9px; font-size:12px; border-radius:8px;}
+
+.lang{position:relative;}
+.lang select{
+  font-family:var(--f-b); font-size:13px; font-weight:700;
+  border:1.5px solid var(--line); background:var(--card); color:var(--ink);
+  border-radius:10px; padding:8px 10px; cursor:pointer; outline:none;
+}
+
+/* ============ Stage ============ */
+.stage{flex:1; display:flex; min-height:0;}
+
+/* ---- 檢查清單側欄 ---- */
+.checklist{
+  width:250px; flex:0 0 250px; overflow-y:auto;
+  padding:16px 14px; border-right:2px dashed var(--line);
+  background:linear-gradient(rgba(255,255,255,.35), rgba(255,255,255,.08));
+}
+.cl-head{display:flex; align-items:center; gap:12px; margin-bottom:6px;}
+.ring{position:relative; width:74px; height:74px;}
+.ring svg{width:74px; height:74px; transform:rotate(-90deg);}
+.ring .bg{fill:none; stroke:var(--line); stroke-width:7;}
+.ring .fg{fill:none; stroke:var(--teal); stroke-width:7; stroke-linecap:round;
+  transition:stroke-dashoffset .6s cubic-bezier(.6,0,.3,1);}
+.ring .num{position:absolute; inset:0; display:grid; place-items:center;
+  font-family:var(--f-h); font-weight:700; font-size:24px; color:var(--deep);}
+.cl-title{font-family:var(--f-h); font-size:26px; line-height:1; font-weight:700;}
+.cl-sub{font-size:12px; color:var(--muted); margin-bottom:12px;}
+.cl-items{display:flex; flex-direction:column; gap:9px;}
+.cl-item{
+  display:flex; gap:9px; align-items:flex-start;
+  background:var(--card); border:1.5px solid var(--line); border-radius:11px;
+  padding:9px 10px; font-size:13px; line-height:1.35;
+  opacity:.55; filter:saturate(.4); transition:opacity .3s, filter .3s, transform .3s;
+}
+.cl-item.done{opacity:1; filter:saturate(1); transform:rotate(-.4deg);}
+.cl-check{
+  width:20px;height:20px;flex:0 0 20px;border-radius:6px;border:2px dashed var(--faint);
+  display:grid;place-items:center;font-size:13px;color:transparent;margin-top:1px;
+}
+.cl-item.done .cl-check{border-style:solid;border-color:var(--teal);background:var(--mint);color:var(--teal);}
+.cl-desc{font-size:11px; color:var(--muted); margin-top:10px; line-height:1.5;}
+.badge-ready{
+  display:none;margin-top:10px;text-align:center;font-family:var(--f-n);font-size:16px;
+  background:var(--mint); border:2px dashed var(--teal); color:var(--teal);
+  border-radius:12px; padding:8px 6px; transform:rotate(-1deg);
+}
+.badge-ready.show{display:block; animation:pop .4s;}
+.badge-ready button{margin-top:7px;}
+
+/* ---- 白板 ---- */
+.board{
+  flex:1; overflow-x:auto; overflow-y:hidden; padding:18px 20px 26px;
+  background:
+    radial-gradient(circle, rgba(90,75,40,.05) 1px, transparent 1.5px) 0 0/26px 26px,
+    transparent;
+}
+.board-inner{display:flex; gap:18px; align-items:flex-start; width:max-content; min-width:100%; padding-bottom:8px;}
+.board-title{
+  font-family:var(--f-h); font-size:40px; font-weight:700; line-height:1;
+  margin:2px 4px 16px; width:max-content; min-width:180px; outline:none;
+  border-bottom:2px dashed transparent; cursor:text;
+}
+.board-title:hover{border-bottom-color:var(--faint);}
+.board-title:focus{border-bottom-color:var(--coral);}
+.board-title:empty:before{content:attr(data-ph); color:var(--faint);}
+
+/* ---- 欄位 panels ---- */
+.col{
+  width:290px; flex:0 0 290px;
+  background:var(--card); border-radius:18px; box-shadow:var(--shadow);
+  border:1.5px solid var(--line); padding:12px 11px 14px;
+  display:flex; flex-direction:column; max-height:calc(100vh - 160px);
+  animation:rise .5s both;
+}
+.col:nth-child(2){animation-delay:.05s}.col:nth-child(3){animation-delay:.1s}
+.col:nth-child(4){animation-delay:.15s}.col:nth-child(5){animation-delay:.2s}
+.col:nth-child(6){animation-delay:.25s}.col:nth-child(7){animation-delay:.3s}
+
+.col-head{display:flex; align-items:center; gap:8px; padding:2px 2px 9px; position:relative;}
+.col-head .was{
+  position:absolute; top:-12px; left:-3px; width:70%; height:16px;
+  background:repeating-linear-gradient(45deg, rgba(255,255,255,.7) 0 6px, rgba(255,255,255,.35) 6px 12px);
+  border-radius:3px; transform:rotate(-1.5deg); opacity:.85; pointer-events:none;
+}
+.col-head .ic{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex:0 0 30px;color:#fff;}
+.col-head h2{font-family:var(--f-h); font-size:24px; font-weight:700; line-height:1;}
+.col-head .count{font-family:var(--f-n); font-size:14px; color:var(--muted);
+  background:var(--board); border-radius:20px; padding:2px 9px;}
+.col-body{overflow-y:auto; overflow-x:hidden; flex:1; display:flex; flex-direction:column; gap:12px; padding:6px 2px 4px;}
+
+.ic-plane{background:#6aa8d6}.ic-bus{background:#7fb57f}.ic-bowl{background:#ee9aa4}.ic-wallet{background:#b68ad0}
+.ic-team{background:#58a8a0}.ic-clock{background:#c99a5b}
+
+/* ---- 便利貼卡片 ---- */
+.note{
+  position:relative; border-radius:4px 14px 14px 14px; padding:16px 12px 10px;
+  box-shadow:var(--shadow); cursor:grab; transition:transform .15s, box-shadow .15s;
+  animation:pop .35s both;
+}
+.note:hover{transform:rotate(-1deg) translateY(-2px) scale(1.01); box-shadow:0 6px 16px rgba(90,75,40,.22);}
+.note.dragging{opacity:.45;}
+.note::before{
+  content:""; position:absolute; top:-10px; left:50%; margin-left:-36px;
+  width:72px; height:16px; background:var(--washi); border-radius:2px;
+  border:1px solid rgba(255,255,255,.55); transform:rotate(-1.6deg);
+}
+.note .nt{
+  font-family:var(--f-n); font-size:18px; line-height:1.35; outline:none;
+  min-height:26px; word-break:break-word;
+}
+.note .nt:empty:before{content:attr(data-ph); color:var(--faint);}
+.note-foot{display:flex; align-items:center; gap:6px; margin-top:7px; min-height:22px;}
+.note-foot .sq{width:22px;height:22px;border-radius:6px;background:rgba(255,255,255,.35);}
+.mini{
+  font-family:var(--f-b); font-size:11px; background:rgba(255,255,255,.55);
+  border:1px dashed rgba(0,0,0,.12); color:var(--muted); border-radius:6px; padding:2px 6px;
+}
+.del{
+  margin-left:auto; width:22px; height:22px; flex:0 0 22px; border:none; cursor:pointer; border-radius:50%;
+  background:transparent; color:var(--faint); font-size:15px; line-height:1;
+  transition:background .15s, color .15s;
+}
+.note:hover .del{color:var(--muted);}
+.del:hover{background:var(--pink); color:var(--corald);}
+.note .heart{
+  border:none; cursor:pointer; background:transparent; color:#c96f6a;
+  font-family:var(--f-n); font-size:15px; padding:0 2px; line-height:1;
+  transform:translateY(-1px); transition:transform .12s;
+}
+.note .heart:hover{transform:scale(1.25);}
+.seal{
+  margin-left:auto; font-family:var(--f-n); font-size:12px; color:var(--teal);
+  background:var(--mint); border:1px dashed var(--teal); border-radius:6px; padding:1px 6px;
+}
+.note-y{background:var(--yellow); transform:rotate(.5deg);}
+.note-p{background:var(--pink); transform:rotate(-.7deg);}
+.note-m{background:var(--mint); transform:rotate(.8deg);}
+.note-s{background:var(--sky); transform:rotate(-.5deg);}
+.note-v{background:var(--lav); transform:rotate(-.8deg);}
+.note-o{background:#ffe2c2; transform:rotate(.6deg);}
+
+/* ---- 交通卡特殊 ---- */
+.trans-row{padding:0 2px;}
+.trans-card{
+  display:flex; gap:8px; align-items:center; background:var(--card);
+  border:1.5px solid var(--line); border-radius:12px; padding:8px 10px; margin-bottom:8px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06); cursor:grab;
+}
+.trans-card .nt{font-family:var(--f-b); font-size:13px;}
+.badge{font-family:var(--f-b); font-size:11px; color:#fff; border-radius:6px; padding:2px 7px; flex:0 0 auto;}
+
+/* ---- 成員與任務 ---- */
+.tags{display:flex; flex-wrap:wrap; gap:7px; margin-bottom:8px; padding:8px; background:var(--board); border-radius:12px;}
+.tag{
+  display:inline-flex; align-items:center; gap:5px; font-family:var(--f-n); font-size:15px;
+  color:#fff; padding:3px 9px 3px 11px; border-radius:20px; cursor:grab;
+  box-shadow:0 1px 3px rgba(0,0,0,.18); user-select:none;
+}
+.tag .kill{background:rgba(0,0,0,.18); border-radius:50%; width:15px;height:15px;font-size:11px;line-height:15px;text-align:center;cursor:pointer;}
+.addrow{display:flex; gap:6px; margin-bottom:10px;}
+.addrow input{
+  flex:1; font-family:var(--f-b); font-size:13px; padding:7px 9px; border-radius:9px;
+  border:1.5px solid var(--line); background:var(--card); color:var(--ink); outline:none; min-width:0;
+}
+.addrow input:focus{border-color:var(--coral);}
+.task{
+  position:relative; background:var(--card); border:1.5px solid var(--line); border-radius:13px;
+  padding:9px 10px 8px; box-shadow:0 1px 3px rgba(0,0,0,.06);
+}
+.task .nt{font-family:var(--f-b); font-size:13px; line-height:1.3; outline:none; min-height:20px;}
+.task .nt:empty:before{content:attr(data-ph); color:var(--faint);}
+.task-foot{display:flex; align-items:center; gap:6px; margin-top:7px;}
+.mini-assign{
+  flex:0 0 auto; font-family:var(--f-b); font-size:11px; color:var(--muted);
+  border:1.5px dashed var(--line); border-radius:7px; padding:2px 7px; cursor:default;
+}
+.mini-assign.ok{background:var(--mint); border-style:solid; border-color:var(--teal); color:var(--teal);}
+.task.drag-over{outline:3px dashed var(--coral); outline-offset:2px; background:#fff4ee;}
+
+/* ---- 預算 ---- */
+.budget-row{display:flex; align-items:center; gap:6px;}
+.budget-row input[type=text]{
+  flex:1; font-family:var(--f-b); font-size:13px; padding:7px 9px; border-radius:9px;
+  border:1.5px solid var(--line); background:var(--card); outline:none; min-width:0;
+}
+.budget-row input[type=number]{
+  width:78px; font-family:var(--f-b); font-size:13px; padding:7px 8px; border-radius:9px;
+  border:1.5px solid var(--line); background:var(--card); outline:none; text-align:right;
+}
+.budget-row input:focus{border-color:var(--coral);}
+.budget-sum{ margin-top:9px; padding:10px; background:var(--board); border-radius:12px; }
+.budget-sum .l{font-size:11px; color:var(--muted);}
+.budget-sum .big{font-family:var(--f-h); font-size:30px; font-weight:700; color:var(--deep); line-height:1.1;}
+.budget-sum .per{font-family:var(--f-b); font-size:13px; color:var(--teal); font-weight:700;}
+
+/* ---- 時間軸 ---- */
+.tl-slot{
+  background:var(--card); border:1.5px dashed var(--line); border-radius:13px;
+  padding:8px 9px; transition:background .15s, outline .15s;
+}
+.tl-slot.drag-over{outline:3px dashed var(--corald); outline-offset:2px; background:#fff7ef;}
+.tl-row{display:flex; gap:7px; align-items:center; margin-bottom:6px;}
+.tl-row .t{
+  width:72px; flex:0 0 72px; font-family:var(--f-n); font-size:16px; text-align:center;
+  border-radius:8px; border:1.5px solid var(--line); padding:4px 2px; outline:none; color:var(--deep);
+}
+.tl-text{font-family:var(--f-n); font-size:17px; line-height:1.3; min-height:22px; outline:none; word-break:break-word;}
+.tl-text:empty:before{content:attr(data-ph); color:var(--faint);}
+.tl-note{display:none; font-family:var(--f-b); font-size:11px; color:var(--teal); margin:1px 2px 2px;}
+.tl-note.show{display:block;}
+
+.col-add{
+  margin-left:auto; width:27px; height:27px; border-radius:50%;
+  border:2px dashed var(--faint); background:var(--card); color:var(--muted);
+  font-family:var(--f-b); font-size:16px; font-weight:700; line-height:1;
+  display:grid; place-items:center; cursor:pointer;
+  transition:all .15s; transform:rotate(0deg);
+}
+.col-add:hover{border-color:var(--coral); color:var(--corald); background:rgba(255,122,89,.1); transform:rotate(90deg);}
+
+/* ---- 模態框 ---- */
+.veil{
+  position:fixed; inset:0; background:rgba(58,55,48,.45); backdrop-filter:blur(3px);
+  display:none; place-items:center; z-index:100; padding:20px;
+}
+.veil.open{display:grid; animation:fade .25s;}
+.paper-card{
+  width:min(560px, 94vw); max-height:88vh; overflow-y:auto;
+  background:var(--card); border-radius:22px; box-shadow:0 24px 60px rgba(0,0,0,.35);
+  padding:26px 26px 24px; position:relative; transform:rotate(-.4deg);
+  border:2px solid var(--line); animation:cardin .35s cubic-bezier(.5,1.6,.4,1);
+}
+.paper-card .ribbon{position:absolute; top:-14px; left:50%; transform:translateX(-50%) rotate(-2deg);}
+.paper-card h2{font-family:var(--f-h); font-size:38px; font-weight:700; text-align:center; line-height:1.05;}
+.paper-card .sub{text-align:center; color:var(--muted); font-size:14px; margin:4px 0 18px;}
+
+.showcase{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:14px 0;}
+.showcase .cell{background:var(--board); border-radius:13px; padding:11px; text-align:center;}
+.showcase .cell b{display:block; font-family:var(--f-h); font-size:26px; font-weight:700; color:var(--deep);}
+.showcase .cell span{font-size:11px; color:var(--muted);}
+.itin{
+  background:linear-gradient(rgba(201,229,242,.5), rgba(201,229,242,.15));
+  border:1.5px dashed #8fb6cd; border-radius:14px; padding:12px 14px; margin:12px 0; list-style:none;
+}
+.itin li{font-family:var(--f-n); font-size:17px; padding:4px 0; border-bottom:1px dashed rgba(0,0,0,.08); display:flex; gap:9px;}
+.itin li:last-child{border-bottom:none;}
+.itin .t{color:var(--teal); font-weight:700;}
+.actions{display:flex; gap:10px; justify-content:center; margin-top:16px;}
+
+/* ---- 說明指南 ---- */
+.help{ width:min(680px, 94vw); }
+.help h2{margin-bottom:2px;}
+.help .doc{color:var(--ink); font-size:14px; line-height:1.65;}
+.help h3{font-family:var(--f-h); font-size:24px; margin:18px 0 4px; color:var(--corald);}
+.help h4{font-size:14px; margin:12px 0 2px; color:var(--teal);}
+.help p{margin:6px 0;}
+.help ul{margin:4px 0 4px 20px;}
+.help li{margin:3px 0;}
+.help code{background:var(--board); border:1px solid var(--line); border-radius:5px; padding:0 5px; font-size:12px;}
+.help .kv{display:flex; gap:10px; flex-wrap:wrap; margin:8px 0;}
+.help .kv b{min-width:92px; color:var(--deep);}
+
+/* ---- 彩帶 ---- */
+.confetti{position:fixed; top:-14px; z-index:400; pointer-events:none; animation:fall linear forwards; opacity:.95;}
+@keyframes fall{to{transform:translateY(108vh) rotate(720deg); opacity:.2;}}
+@keyframes pop{from{transform:scale(.6); opacity:0;} to{transform:scale(1); opacity:1;}}
+@keyframes rise{from{transform:translateY(16px); opacity:0;} to{transform:none; opacity:1;}}
+@keyframes fade{from{opacity:0;} to{opacity:1;}}
+@keyframes cardin{from{transform:scale(.82) rotate(-3deg); opacity:0;} to{transform:none; opacity:1;}}
+
+.paper-card.confirm{width:min(420px,92vw); text-align:center;}
+.paper-card.confirm h2{font-family:var(--f-b); font-size:18px; font-weight:700; line-height:1.5; color:var(--ink); margin:4px 0 18px;}
+
+@media (max-width:820px){
+  .stage{flex-direction:column; overflow:hidden;}
+  .checklist{width:auto; flex:none; border-right:none; border-bottom:2px dashed var(--line); max-height:38vh;}
+  .board{overflow-y:auto;}
+  body{overflow:auto;}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 12l20-8-6 18-4-6-10-4z"/><path d="M12 16L20 4"/>
+      </svg>
+    </div>
+    <div>
+      <h1 data-i18n="brand.title">Trip Planner</h1>
+      <small data-i18n="brand.sub">Class trip planning board</small>
+    </div>
+  </div>
+
+  <div class="spacer"></div>
+  <div class="tools">
+    <span class="lang">
+      <select id="langSel" aria-label="Language">
+        <option value="zh-TW">繁體中文</option>
+        <option value="zh-CN">简体中文</option>
+        <option value="en">English</option>
+      </select>
+    </span>
+    <button class="btn ghost sm" id="btnExample" data-i18n="tool.example">Load example</button>
+    <button class="btn ghost sm" id="btnReset" data-i18n="tool.reset">Reset</button>
+    <button class="btn coral sm" id="btnHelp">?</button>
+  </div>
+</header>
+
+<div class="stage">
+  <aside class="checklist">
+    <div class="cl-head">
+      <div class="ring">
+        <svg viewBox="0 0 74 74">
+          <circle class="bg" cx="37" cy="37" r="31"></circle>
+          <circle class="fg" cx="37" cy="37" r="31"></circle>
+        </svg>
+        <div class="num" id="ringNum">0%</div>
+      </div>
+      <div>
+        <div class="cl-title" data-i18n="cl.title">Trip Kit</div>
+        <div class="cl-sub" data-i18n="cl.sub">Pack your plan to 100%</div>
+      </div>
+    </div>
+    <div class="cl-items" id="clItems"></div>
+    <p class="cl-desc" data-i18n="cl.desc">Checklist is a light guide — play in any order you like.</p>
+    <div class="badge-ready" id="badgeReady">
+      <div data-i18n="cl.ready">🎉 Board is ready to go!</div>
+      <button class="btn coral sm" id="btnShowCard" data-i18n="cl.showCard">Show my trip card</button>
+    </div>
+  </aside>
+
+  <main class="board" id="board">
+    <div class="board-inner">
+      <div class="board-title" id="boardTitle" contenteditable="true" data-ph="My class trip…"></div>
+    </div>
+    <div class="board-inner" id="cols"></div>
+  </main>
+</div>
+
+<!-- 完成卡片 -->
+<div class="veil" id="veilCard">
+  <div class="paper-card" id="cardBody">
+    <div class="ribbon">
+      <svg width="120" height="26" viewBox="0 0 120 26"><rect x="2" y="2" width="116" height="16" fill="#ff7a59" rx="4"/><polygon points="2,18 10,26 18,18" fill="#e86240"/><polygon points="102,18 110,26 118,18" fill="#e86240"/></svg>
+    </div>
+    <h2 id="cardTitle" data-i18n="card.title">Your Trip Plan is Ready!</h2>
+    <p class="sub" id="cardSub"></p>
+    <div class="showcase" id="cardStats"></div>
+    <ul class="itin" id="cardItin"></ul>
+    <div class="actions">
+      <button class="btn coral" id="btnAgain" data-i18n="card.again">Plan another trip</button>
+      <button class="btn ghost" id="btnCloseCard" data-i18n="card.close">Back to board</button>
+    </div>
+  </div>
+</div>
+
+<!-- 說明指南（含程式文件） -->
+<div class="veil" id="veilHelp">
+  <div class="paper-card help" id="helpBody"></div>
+</div>
+
+<!-- 確認彈窗 -->
+<div class="veil" id="veilConfirm">
+  <div class="paper-card confirm">
+    <h2 id="cfMsg"></h2>
+    <div class="actions">
+      <button class="btn coral" id="cfYes"></button>
+      <button class="btn ghost" id="cfNo"></button>
+    </div>
+  </div>
+</div>
+
+<div id="confettiLayer"></div>
+
+<script>
+/* ================= 語系字典 ================= */
+const I18N = {
+  "en":{
+    "brand.title":"Trip Planner","brand.sub":"Class trip planning board",
+    "tool.example":"Load example","tool.reset":"Reset","tool.help":"How it works",
+    "cl.title":"Trip Kit","cl.sub":"Pack your plan to 100%",
+    "cl.desc":"The checklist is a light guide — you can play in any order.",
+    "cl.ready":"A full bag — 6/6 packed!","cl.showCard":"Show my trip card",
+    "cl.i1":"Add 3+ attractions","cl.i2":"Save 2+ food stops","cl.i3":"Plan 1+ transport option",
+    "cl.i4":"Create 3+ tasks & assign each owner","cl.i5":"Enter 3+ budget items","cl.i6":"Fill 3+ timeline slots",
+    "col.att":"Attractions","col.food":"Food Stops","col.trans":"Transport","col.tasks":"Team & Tasks",
+    "col.budget":"Budget","col.time":"Timeline",
+    "ph.att":"Where to go?","ph.food":"What to eat?","ph.trans":"How to get there?","ph.task":"What needs doing?",
+    "ph.time":"Time","ph.text":"What's happening?","ph.name":"Member name","ph.budgetLabel":"Item","ph.budgetAmt":"Amount",
+    "add.att":"+ Add attraction","add.food":"+ Add a food stop","add.trans":"+ Add transport","add.task":"+ Add task",
+    "add.member":"Add member","add.budget":"+ Add budget item","add.slot":"+ Add time slot",
+    "ministar":"start","miniby":"by","minicap":"travel time",
+    "t.full":"per head","t.total":"Total","t.members":"members","t.note":"pinned to timeline ✓",
+    "unchoice":"choose by dragging","unassign":"unassign","assignHint":"Drag a member chip onto a task to assign",
+    "boardTitlePh":"My class trip…","celeb.title":"Your Trip Plan is Ready!","celeb.why":"Nice work — every box of the Trip Kit is ticked. This is your plan.",
+    "s.place":"stops","s.yum":"eats","s.task":"tasks","s.done":"tasks assigned","s.budget":"budget","s.head":"per person",
+    "card.title":"Your Trip Plan is Ready!","card.sub":"Packed & scheduled — save a screenshot or share the file to replay.",
+    "card.again":"Plan another trip","card.close":"Back to board","card.itin":"Quick itinerary",
+    "resetMsg":"Reset the whole board and start over?","confDel":"Delete this note?","ok":"OK","cancel":"Cancel",
+    "help.title":"Trip Planner — Help & Guide","help.close":"Close",
+    "help.h0":"Overview",
+    "help.p0":"Trip Planner is a Miro-style whiteboard that walks a class through building a complete trip plan — brainstorm stops, sort out transport & food, share out tasks, watch the budget, then pin everything into a timeline. No login, no server: everything runs in your browser and stays on your device.",
+    "help.h1":"Board areas & how to use them",
+    "help.b1a":"Double-click a note to edit. Drag notes to reorder, use the heart to vote, and press ✕ to delete.",
+    "help.b1b":"Same as attractions. The badge ($$$...) shows price level.",
+    "help.b1c":"Jot a transport idea with start point & travel time.",
+    "help.b1d":"First create member chips, then drag a chip onto a task to assign an owner. Open tasks need a name to count toward the checklist.",
+    "help.b1e":"Each row is one item. The sum and the cost per head update live (per head = total ÷ members).",
+    "help.b1f":"Add time slots, write the time, then drop an attraction / food / transport note onto a slot to pin it. The source note gets a pinned ✓ mark.",
+    "help.h2":"Trip Kit & completion",
+    "help.p2":"The Trip Kit checklist on the left tracks 6 goals. When all six are ticked, confetti flies and a summary card appears with your plan stats and a quick itinerary. You can keep editing after that or start a new plan.",
+    "help.h3":"Where your data lives",
+    "help.p3":"Everything auto-saves to this browser's local storage (localStorage). Refresh or close the page and your board comes right back — on the same device & browser. Nothing is uploaded anywhere. Clear browser data or press Reset to wipe it.",
+    "help.h4":"Sharing with students",
+    "help.p4":"Just share this single index.html file. Each student opens their own copy on their own device and each builds their own plan privately. No registration, no network needed, works offline.",
+    "help.h5":"Tips",
+    "help.li1":"For a live demo, press Load example to instantly populate a sample trip.",
+    "help.li2":"Edit the big title to name your trip before finishing.",
+    "help.li3":"Drag freely — the board is informal on purpose. Neatness doesn't matter.",
+    "help.h6":"FAQ",
+    "help.f1":"Can two people edit the same board at once?","help.f1a":"No. This is a single-user local demo by design (no backend). Each person works on their own copy.",
+    "help.f2":"Will my plan survive a browser refresh?","help.f2a":"Yes — it auto-saves to local storage on this device.",
+    "help.f3":"Why did my board disappear?","help.f3a":"You pressed Reset, or your browser cleared storage. It is never stored on a server, so nothing can be recovered from elsewhere.",
+    "help.h7":"Version & info",
+    "help.p7":"Pure HTML/CSS/JS, no dependencies, offline-capable. Version 0.1.0 — 2026-09-23."
+  },
+  "zh-TW":{
+    "brand.title":"Trip Planner","brand.sub":"班級旅行企劃白板",
+    "tool.example":"載入範例","tool.reset":"重來","tool.help":"使用說明",
+    "cl.title":"行程工具箱","cl.sub":"把行囊打包到 100%",
+    "cl.desc":"勾選清單是軟性引導，你可以隨意順序玩。",
+    "cl.ready":"行李整理好了 — 6/6！","cl.showCard":"看看我的行程卡",
+    "cl.i1":"新增 3 個以上景點","cl.i2":"收藏 2 間以上美食","cl.i3":"規劃 1 個以上交通方案",
+    "cl.i4":"新增 3 張任務並都指派負責人","cl.i5":"填寫 3 項以上預算","cl.i6":"排滿 3 個時間軸時段",
+    "col.att":"景點區","col.food":"美食區","col.trans":"交通區","col.tasks":"成員與任務","col.budget":"預算區","col.time":"時間軸",
+    "ph.att":"想去哪裡？","ph.food":"想吃什麼？","ph.trans":"怎麼去？","ph.task":"要做什麼？",
+    "ph.time":"時間","ph.text":"安排什麼？","ph.name":"成員名字","ph.budgetLabel":"項目","ph.budgetAmt":"金額",
+    "add.att":"＋ 新增景點","add.food":"＋ 新增美食","add.trans":"＋ 新增交通","add.task":"＋ 新增任務",
+    "add.member":"加入成員","add.budget":"＋ 新增預算項目","add.slot":"＋ 新增時段",
+    "ministar":"啟程","miniby":"交通","minicap":"車程",
+    "t.full":"每人分攤","t.total":"總計","t.members":"人同行","t.note":"已排入時間軸 ✓",
+    "unchoice":"等待指派（拖曳名牌）","unassign":"取消指派","assignHint":"把成員名牌拖到任務上即完成指派",
+    "boardTitlePh":"我的班級旅行…","celeb.title":"你的旅行計劃完成啦！","celeb.why":"旅程工具箱全部打勾——這份計劃可以出發了。",
+    "s.place":"個景點","s.yum":"間美食","s.task":"樣任務","s.done":"項已指派","s.budget":"預算","s.head":"每人分攤",
+    "card.title":"你的旅行計劃完成啦！","card.sub":"已打包與排程——截圖留念，或把檔案分享給同學重玩。",
+    "card.again":"再規劃一趟","card.close":"回到白板","card.itin":"快速行程預覽",
+    "resetMsg":"要清空整個白板重新開始嗎？","confDel":"刪掉這張卡片？","ok":"確定","cancel":"取消",
+    "help.title":"Trip Planner — 使用說明與專案文件","help.close":"關閉",
+    "help.h0":"專案概述",
+    "help.p0":"Trip Planner 是一個 Miro 風格白板，引導全班一步步完成一份完整的旅行計劃：發想景點、搞定交通與美食、分派任務、掌控預算，最後把它們排進時間軸。免登入、免伺服器：一切都在瀏覽器內執行，資料只留在你的裝置上。",
+    "help.h1":"六個區塊與操作方式",
+    "help.b1a":"點卡片文字即可編輯；拖曳可排序，愛心是投票讚，✕ 是刪除。",
+    "help.b1b":"與景點相同。小徽章（$$$…）代表餐廳價位等級。",
+    "help.b1c":"記下交通方案起點與車程估時。",
+    "help.b1d":"先建立成員名牌，再把名牌拖到任務卡上即指派負責人。未指派的任務不會計入檢查清單。",
+    "help.b1e":"每一列是一個預算項目，總計與「每人分攤」即時更新（每人分攤＝總計 ÷ 成員數）。",
+    "help.b1f":"先新增時段、填上時間，再把景點／美食／交通卡片拖進時段內排程；來源卡片會蓋上「已排入」印章。",
+    "help.h2":"行程工具箱與完成判定",
+    "help.p2":"左側的「行程工具箱」追蹤六個目標。全數達標時會放彩帶、跳出總結卡，顯示統計與快速行程預覽。之後仍可繼續編輯，或按「再規劃一趟」重新開始。",
+    "help.h3":"資料存在哪裡",
+    "help.p3":"所有內容自動存進此瀏覽器的 localStorage。重新整理或關閉頁面後，只要在同一裝置與瀏覽器即可復原。任何資料都不會被上傳。清除瀏覽器資料或按「重來」即可清空。",
+    "help.h4":"如何分享給學生",
+    "help.p4":"直接分享這個單一 index.html 檔案。每位學生在自己裝置開啟自己的副本，各自獨立規劃，資料彼此不互通。免註冊、免網路、可離線使用。",
+    "help.h5":"小技巧",
+    "help.li1":"現場示範時按「載入範例」，一秒灌入樣本行程。",
+    "help.li2":"完成前記得把頂端大標題改成你的行程名稱。",
+    "help.li3":"放心亂拖——白板本來就是不拘小節的地方。",
+    "help.h6":"常見問題",
+    "help.f1":"兩個人能同時編輯同一塊白板嗎？","help.f1a":"不行。這是有意設計的單人本地 demo（無後端），每人各自在自己的副本上玩。",
+    "help.f2":"重新整理後計劃還在嗎？","help.f2a":"在——會自動存進此裝置的 localStorage。",
+    "help.f3":"為什麼白板空了？","help.f3a":"你按了「重來」，或瀏覽器清掉了儲存空間。計劃從未上傳伺服器，無法從別處復原。",
+    "help.h7":"版本與技術",
+    "help.p7":"純 HTML/CSS/JS，零相依套件，可離線執行。版本 0.1.0 — 2026-09-23。"
+  },
+  "zh-CN":{
+    "brand.title":"Trip Planner","brand.sub":"班级旅行企划白板",
+    "tool.example":"加载示例","tool.reset":"重来","tool.help":"使用说明",
+    "cl.title":"行程工具箱","cl.sub":"把行囊打包到 100%",
+    "cl.desc":"勾选清单是软性引导，可以任意顺序玩。",
+    "cl.ready":"行李整理好啦 — 6/6！","cl.showCard":"看看我的行程卡",
+    "cl.i1":"新增 3 个以上景点","cl.i2":"收藏 2 间以上美食","cl.i3":"规划 1 个以上交通方案",
+    "cl.i4":"新增 3 张任务并都指派负责人","cl.i5":"填写 3 项以上预算","cl.i6":"排满 3 个时间轴时段",
+    "col.att":"景点区","col.food":"美食区","col.trans":"交通区","col.tasks":"成员与任务","col.budget":"预算区","col.time":"时间轴",
+    "ph.att":"想去哪里？","ph.food":"想吃什么？","ph.trans":"怎么去？","ph.task":"要做什么？",
+    "ph.time":"时间","ph.text":"安排什么？","ph.name":"成员名字","ph.budgetLabel":"项目","ph.budgetAmt":"金额",
+    "add.att":"＋ 新增景点","add.food":"＋ 新增美食","add.trans":"＋ 新增交通","add.task":"＋ 新增任务",
+    "add.member":"加入成员","add.budget":"＋ 新增预算项目","add.slot":"＋ 新增时段",
+    "ministar":"出发","miniby":"交通","minicap":"车程",
+    "t.full":"每人分摊","t.total":"总计","t.members":"人同行","t.note":"已排入时间轴 ✓",
+    "unchoice":"等待指派（拖拽名牌）","unassign":"取消指派","assignHint":"把成员名牌拖到任务上即完成指派",
+    "boardTitlePh":"我的班级旅行…","celeb.title":"你的旅行计划完成啦！","celeb.why":"行程工具箱全部打勾——这份计划可以出发了。",
+    "s.place":"个景点","s.yum":"间美食","s.task":"项任务","s.done":"项已指派","s.budget":"预算","s.head":"每人分摊",
+    "card.title":"你的旅行计划完成啦！","card.sub":"已打包与排程——截图留念，或把文件分享给同学重玩。",
+    "card.again":"再规划一趟","card.close":"回到白板","card.itin":"快速行程预览",
+    "resetMsg":"要清空整个白板重新开始吗？","confDel":"删除这张卡片？","ok":"确定","cancel":"取消",
+    "help.title":"Trip Planner — 使用说明与项目文档","help.close":"关闭",
+    "help.h0":"项目概述",
+    "help.p0":"Trip Planner 是一个 Miro 风格白板，引导学生一步步完成一份完整的旅行计划：构思景点、搞定交通与美食、分派任务、掌握预算，最后把它们排进时间轴。免登录、免服务器：一切都在浏览器内运行，数据只留在你的设备上。",
+    "help.h1":"六个区块与操作方式",
+    "help.b1a":"点击卡片文字即可编辑；拖拽可排序，爱心是投票赞，✕ 是删除。",
+    "help.b1b":"与景点相同。小徽章（$$$…）代表餐厅价位等级。",
+    "help.b1c":"记下交通方案起点与车程估时。",
+    "help.b1d":"先建立成员名牌，再把名牌拖到任务卡上即指派负责人。未指派的任务不计入勾选清单。",
+    "help.b1e":"每一行是一个预算项目，总计与「每人分摊」即时更新（每人分摊＝总计 ÷ 成员数）。",
+    "help.b1f":"先新增时段、填好时间，再把景点/美食/交通卡片拖进时段内排程；来源卡片会盖上「已排入」印章。",
+    "help.h2":"行程工具箱与完成判定",
+    "help.p2":"左侧的「行程工具箱」追踪六个目标。全部达标时会放彩带、弹出总结卡，显示统计与快速行程预览。之后仍可继续编辑，或按「再规划一趟」重新开始。",
+    "help.h3":"数据存在哪里",
+    "help.p3":"所有内容自动存入此浏览器的 localStorage。刷新或关闭页面后，只要在同一设备与浏览器即可复原。任何数据都不会被上传。清除浏览器数据或按「重来」即可清空。",
+    "help.h4":"如何分享给学生",
+    "help.p4":"直接分享这个单一 index.html 文件。每位学生在自己设备打开自己的副本，各自独立规划，互不互通。免注册、免网络、可离线使用。",
+    "help.h5":"小技巧",
+    "help.li1":"现场演示时按「加载示例」，一秒灌入样本行程。",
+    "help.li2":"完成前记得把顶部大标题改成你的行程名称。",
+    "help.li3":"放心乱拖——白板本来就是不拘小节的地方。",
+    "help.h6":"常见问题",
+    "help.f1":"两个人能同时编辑同一块白板吗？","help.f1a":"不行。这是有意设计的单机本地 demo（无后端），每人各自在自己的副本上玩。",
+    "help.f2":"刷新后计划还在吗？","help.f2a":"在——会自动存入此设备的 localStorage。",
+    "help.f3":"为什么白板空了？","help.f3a":"你按了「重来」，或浏览器清掉了存储空间。计划从未上传服务器，无法从别处复原。",
+    "help.h7":"版本与技术",
+    "help.p7":"纯 HTML/CSS/JS，零依赖，可离线运行。版本 0.1.0 — 2026-09-23。"
+  }
+};
+const t = k => (I18N[state && state.lang || "zh-TW"] && I18N[state.lang][k]) ?? I18N["zh-TW"][k] ?? k;
+
+/* ================= 狀態 ================= */
+const LS_KEY = "trip-planner.v1";
+let state = null;
+const COLORS = ["#58a8a0","#c96f6a","#b68ad0","#6aa8d6","#e39a3a","#7fb57f","#e07a8f","#8b8fd0"];
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+const find = (sec, id) => state[sec].find(c => c.id === id);
+
+function defaultState(){
+  return {
+    lang: detectLang(),
+    title: "",
+    members: [],
+    attractions: [], food: [], transport: [], tasks: [],
+    budget: [], timeline: [],
+    completed: false
+  };
+}
+function detectLang(){
+  const nav = (navigator.language || "zh-TW").toLowerCase();
+  if(nav.startsWith("zh")) return nav.includes("tw") || nav.includes("hk") ? "zh-TW" : "zh-CN";
+  return "en";
+}
+function save(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(e){} }
+function load(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(raw){ state = Object.assign(defaultState(), JSON.parse(raw)); return; }
+  }catch(e){}
+  state = defaultState();
+}
+function wipe(){
+  const lang = state ? state.lang : $("#langSel").value;
+  try{ localStorage.removeItem(LS_KEY); }catch(e){}
+  state = defaultState();
+  state.lang = lang || detectLang();
+}
+
+/* ================= DOM helpers ================= */
+const $ = s => document.querySelector(s);
+const el = (tag, cls, html) => { const e = document.createElement(tag); if(cls) e.className = cls; if(html!=null) e.innerHTML = html; return e; };
+
+/* ================= 晴天確認 ================= */
+function bindStatic(){
+  document.querySelectorAll("[data-i18n]").forEach(n => n.textContent = t(n.dataset.i18n));
+  $("#langSel").value = state.lang;
+}
+function applyLang(){
+  state.lang = $("#langSel").value; save();
+  document.documentElement.lang = state.lang;
+  bindStatic(); renderAll();
+  if($("#veilHelp").classList.contains("open")) renderHelp();
+}
+
+/* ================= 檢核清單 ================= */
+function checklist(){
+  const ok = [
+    state.attractions.length >= 3,
+    state.food.length >= 2,
+    state.transport.length >= 1,
+    state.tasks.length >= 3 && state.tasks.every(x => !!x.assigneeId),
+    state.budget.filter(Boolean).filter(x => x.amount > 0).length >= 3,
+    state.timeline.filter(Boolean).filter(x => x.text.trim() !== "").length >= 3
+  ];
+  return ok;
+}
+const CIRC = 2 * Math.PI * 31;
+function renderChecklist(){
+  const ok = checklist(); const n = ok.filter(Boolean).length; const p = Math.round(n/6*100);
+  $("#ringNum").textContent = p + "%";
+  document.querySelectorAll(".ring .fg").forEach(c => {
+    c.style.strokeDasharray = CIRC + "px";
+    c.style.strokeDashoffset = CIRC * (1 - p/100) + "px";
+  });
+  const wrap = $("#clItems"); wrap.innerHTML = "";
+  [1,2,3,4,5,6].forEach(i => {
+    const d = el("div", "cl-item" + (ok[i-1] ? " done" : ""));
+    d.appendChild(el("div","cl-check","✓"));
+    d.appendChild(el("span", null, t("cl.i"+i)));
+    wrap.appendChild(d);
+  });
+  const ready = $("#badgeReady");
+  const all = n === 6;
+  ready.classList.toggle("show", all);
+  if(all && !state.completed){ state.completed = true; save(); setTimeout(spawnCelebration, 350); }
+}
+
+/* ================= 白板渲染 ================= */
+const sectionMeta = [
+  {key:"attractions", icon:"plane", bg:"note-o", colIc:"ic-plane"},
+  {key:"food",       icon:"bowl",   bg:"note-p", colIc:"ic-bowl"},
+  {key:"transport",  icon:"bus",    bg:"note-s", colIc:"ic-bus"},
+  {key:"tasks",      icon:"team",   bg:"note-m", colIc:"ic-team"},
+  {key:"budget",     icon:"wallet", bg:"note-v", colIc:"ic-wallet"},
+  {key:"timeline",   icon:"clock",  bg:"note-y", colIc:"ic-clock"}
+];
+const ICONS = {
+  plane:'<path d="M2 12l20-8-6 18-4-6-10-4z"/><path d="M12 16L20 4"/>',
+  bowl:'<path d="M4 11h16a8 8 0 0 1-16 0z"/><path d="M4 9V5m4 4V3m4 6V4m4 5V3"/>',
+  bus:'<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M3 9h18M7 16l-1 3m11-3l1 3M7 17h10"/>',
+  wallet:'<rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20M16 14h4"/>',
+  team:'<circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.4"/><path d="M3 19c0-3 2.5-5 6-5s6 2 6 5m2-9c2 .6 3 2 3 4.4V19"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'
+};
+
+function renderAll(){
+  renderChecklist();
+  const colsEl = $("#cols"); const scroll = $("#board").scrollLeft; colsEl.innerHTML = "";
+  sectionMeta.forEach(m => colsEl.appendChild(buildColumn(m)));
+  $("#board").scrollLeft = scroll;
+  $("#boardTitle").textContent = state.title || "";
+  $("#boardTitle").dataset.ph = t("boardTitlePh");
+}
+function buildColumn(m){
+  const col = el("div","col");
+  const head = el("div","col-head");
+  head.appendChild(el("div","was"));
+  const ic = el("div","ic "+m.colIc);
+  ic.innerHTML = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+ICONS[m.icon]+'</svg>';
+  head.appendChild(ic);
+  const nameKey = {attractions:"att", food:"food", transport:"trans", tasks:"tasks", budget:"budget", timeline:"time"}[m.key];
+  head.appendChild(el("h2",null,t("col."+nameKey)));
+  head.appendChild(el("span","count", String(state[m.key].length)));
+  const labelKey = {attractions:"att", food:"food", transport:"trans", tasks:"task", budget:"budget", timeline:"slot"}[m.key];
+  const addBtn = el("button","col-add","+");
+  addBtn.title = t("add."+labelKey);
+  addBtn.setAttribute("aria-label", t("add."+labelKey));
+  addBtn.dataset.action = "add"; addBtn.dataset.sec = m.key;
+  head.appendChild(addBtn);
+  const body = el("div","col-body");
+  if(m.key==="tasks") body.appendChild(buildTasksBody());
+  else if(m.key==="budget") body.appendChild(buildBudgetBody());
+  else if(m.key==="timeline") body.appendChild(buildTimelineBody());
+  else buildSimpleCol(m, body);
+  col.appendChild(head); col.appendChild(body);
+  return col;
+}
+
+function buildSimpleCol(m, body){
+  state[m.key].forEach(c => body.appendChild(buildCard(m.key, c)));
+}
+function scheduledIds(){
+  return new Set(state.timeline.filter(x => x.refId).map(x => x.refId));
+}
+function buildCard(sec, c){
+  const scheduled = sec === "attractions" && scheduledIds().has(c.id);
+  const note = el("div","note note-"+kindOf(sec));
+  note.draggable = true;
+  note.dataset.drag = JSON.stringify({mode:"card", sec, id:c.id});
+  const nt = el("div","nt"); nt.contentEditable = "true";
+  nt.dataset.sec = sec; nt.dataset.id = c.id; nt.textContent = c.text || "";
+  const feet = el("div","note-foot");
+  if(sec==="attractions"){
+    const h = el("button","heart","♥ "+c.likes); h.dataset.action="heart"; h.dataset.id=c.id;
+    feet.appendChild(h);
+  }
+  if(sec==="food" && c.price){
+    const b = el("span","mini", c.price); feet.appendChild(b);
+  }
+  if(sec==="transport"){
+    if(c.cost){ const b = el("span","badge", c.cost); b.style.background="#e39a3a"; feet.appendChild(b); }
+    if(c.time){ const b = el("span","badge", c.time+" "+t("minicap")); b.style.background="#58a8a0"; feet.appendChild(b); }
+  }
+  if(scheduled){ feet.appendChild(el("span","seal", t("t.note"))); }
+  const del = el("button","del","✕"); del.dataset.action="del"; del.dataset.sec=sec; del.dataset.id=c.id;
+  feet.appendChild(del);
+  note.appendChild(nt); note.appendChild(feet);
+  note.addEventListener("dragstart", onDragStart);
+  note.addEventListener("dragend", onDragEnd);
+  return note;
+}
+function kindOf(sec){
+  return {attractions:"o", food:"p", transport:"s", tasks:"m", budget:"v", timeline:"y"}[sec] || "y";
+}
+
+/* --- 成員與任務 --- */
+function buildTasksBody(){
+  const wrap = el("div");
+  const hint = el("div","mini",""); hint.style.marginBottom="7px"; hint.textContent = t("assignHint");
+  wrap.appendChild(hint);
+  const add = el("div","addrow");
+  const inp = el("input"); inp.type="text"; inp.placeholder = t("ph.name"); inp.maxLength = 14;
+  const btn = el("button","btn sm coral", t("add.member"));
+  add.appendChild(inp); add.appendChild(btn); wrap.appendChild(add);
+  if(state.members.length){
+    const tags = el("div","tags");
+    state.members.forEach(m => {
+      const tg = el("span","tag");
+      tg.style.background = m.color; tg.draggable = true;
+      tg.dataset.drag = JSON.stringify({mode:"member", id:m.id, name:m.name});
+      tg.innerHTML = m.name+' <i class="kill">×</i>';
+      tg.querySelector(".kill").dataset.action = "delMem"; tg.querySelector(".kill").dataset.id = m.id;
+      tg.addEventListener("dragstart", onDragStart);
+      tg.addEventListener("dragend", onDragEnd);
+      tags.appendChild(tg);
+    });
+    wrap.appendChild(tags);
+  }
+  state.tasks.forEach(tsk => {
+    const card = el("div","task");
+    card.dataset.drop = "member";
+    const nt = el("div","nt"); nt.contentEditable = "true"; nt.dataset.sec="tasks"; nt.dataset.id=tsk.id;
+    nt.textContent = tsk.text || "";
+    const f = el("div","task-foot");
+    const assign = el("span","mini-assign"+(tsk.assigneeId?" ok":""));
+    const mem = tsk.assigneeId ? state.members.find(x=>x.id===tsk.assigneeId) : null;
+    assign.textContent = mem ? (t("ministar")+" "+mem.name) : t("unchoice");
+    if(mem) assign.style.color = mem.color;
+    if(tsk.assigneeId){ const clear = el("button","btn ghost sm",""+t("unassign")); clear.dataset.action="unassign"; clear.dataset.id=tsk.id; f.appendChild(clear); }
+    else{ const sq = el("span","sq",""); f.appendChild(sq); }
+    const del = el("button","del","✕"); del.dataset.action="del"; del.dataset.sec="tasks"; del.dataset.id=tsk.id;
+    const df = el("div","note-foot"); df.appendChild(assign); df.appendChild(del);
+    f.appendChild(df);
+    card.appendChild(nt); card.appendChild(f);
+    card.addEventListener("dragover", onDragOver);
+    card.addEventListener("dragleave", onDragLeave);
+    card.addEventListener("drop", onDropMember);
+    wrap.appendChild(card);
+  });
+  return wrap;
+}
+
+/* --- 預算 --- */
+function buildBudgetBody(){
+  const wrap = el("div");
+  state.budget.forEach(c => {
+    const row = el("div","budget-row");
+    const lab = el("input"); lab.type="text"; lab.value = c.label || ""; lab.placeholder = t("ph.budgetLabel");
+    lab.dataset.f = "label"; lab.dataset.id = c.id;
+    const amt = el("input"); amt.type="number"; amt.min="0"; amt.step="1"; amt.value = c.amount || "";
+    amt.placeholder = t("ph.budgetAmt"); amt.dataset.f="amount"; amt.dataset.id = c.id;
+    const del = el("button","del","✕"); del.dataset.action="del"; del.dataset.sec="budget"; del.dataset.id=c.id;
+    row.appendChild(lab); row.appendChild(amt); row.appendChild(del);
+    wrap.appendChild(row);
+  });
+  const sum = el("div","budget-sum");
+  const total = state.budget.reduce((a,b)=>a+(+b.amount||0),0);
+  const members = Math.max(1, state.members.length);
+  const per = total / members;
+  const cur = (state.lang==="en") ? "$" : "HK$";
+  const fmt = n => n.toLocaleString(state.lang==="en"?"en-US":"zh-HK", {maximumFractionDigits:0});
+  sum.innerHTML =
+    '<div class="l">'+t("t.total")+'</div><div class="big">'+cur+fmt(total)+'</div>'+
+    '<div class="per">'+t("t.full")+' ≈ '+cur+fmt(per)+' · '+state.members.length+' '+t("t.members")+'</div>';
+  wrap.appendChild(sum);
+  return wrap;
+}
+
+/* --- 時間軸 --- */
+function buildTimelineBody(){
+  const wrap = el("div");
+  state.timeline.forEach(s => {
+    const slot = el("div","tl-slot");
+    slot.dataset.drop = "slot"; slot.dataset.id = s.id;
+    const row = el("div","tl-row");
+    const tm = el("input","t"); tm.value = s.time || ""; tm.placeholder = t("ph.time"); tm.dataset.s="time"; tm.dataset.id=s.id;
+    const del = el("button","del","✕"); del.dataset.action="delSlot"; del.dataset.id=s.id;
+    row.appendChild(tm); row.appendChild(del);
+    const txt = el("div","tl-text"); txt.contentEditable = "true"; txt.textContent = s.text || "";
+    txt.dataset.s="text"; txt.dataset.id=s.id;
+    const note = el("div","tl-note"+(s.refId?" show":""), t("t.note"));
+    slot.appendChild(row); slot.appendChild(txt); slot.appendChild(note);
+    slot.addEventListener("dragover", onDragOver);
+    slot.addEventListener("dragleave", onDragLeave);
+    slot.addEventListener("drop", onDropSlot);
+    wrap.appendChild(slot);
+  });
+  return wrap;
+}
+
+/* ================= 操作 ================= */
+function addCard(sec){
+  if(sec==="tasks") state.tasks.push({id:uid(), text:"", assigneeId:null});
+  else if(sec==="budget") state.budget.push({id:uid(), label:"", amount:0});
+  else if(sec==="timeline") state.timeline.push({id:uid(), time:"", text:"", refId:null});
+  else state[sec].push({id:uid(), text:"", likes:0, price:"", cost:"", time:""});
+  save(); renderAll();
+}
+function delCard(sec, id){
+  state[sec] = state[sec].filter(x => x.id !== id);
+  save(); renderAll();
+}
+function delMember(id){
+  state.members = state.members.filter(x=>x.id!==id);
+  state.tasks.forEach(tsk => { if(tsk.assigneeId===id) tsk.assigneeId=null; });
+  save(); renderAll();
+}
+function unassign(id){ const c = find("tasks", id); if(c) c.assigneeId = null; save(); renderAll(); }
+function delSlot(id){ state.timeline = state.timeline.filter(x=>x.id!==id); save(); renderAll(); }
+
+/* ================= 拖曳 ================= */
+let drag = null;
+function onDragStart(e){
+  drag = JSON.parse(e.target.dataset.drag);
+  drag.text = e.target.querySelector(".nt") ? e.target.querySelector(".nt").textContent : "";
+  try{ e.dataTransfer.setData("text/plain", drag.mode); e.dataTransfer.effectAllowed = "move"; }catch(err){}
+  e.target.classList.add("dragging");
+}
+function onDragEnd(e){ if(e.target) e.target.classList.remove("dragging"); drag=null; }
+function onDragOver(e){
+  if(!drag) return;
+  e.preventDefault();
+  const zone = e.target.closest("[data-drop]");
+  if(zone){
+    const can = (zone.dataset.drop==="member" && drag.mode==="member") || (zone.dataset.drop==="slot" && drag.mode==="card");
+    if(can) zone.classList.add("drag-over");
+  }
+}
+function onDragLeave(e){ const z = e.target.closest("[data-drop]"); if(z) z.classList.remove("drag-over"); }
+function onDropMember(e){
+  if(!drag) return;
+  const zone = e.target.closest("[data-drop='member']");
+  if(!zone || drag.mode!=="member") return;
+  e.preventDefault(); zone.classList.remove("drag-over");
+  const tsk = zone; // task card
+  const id = tsk.querySelector(".nt").dataset.id;
+  const c = find("tasks", id); if(c) c.assigneeId = drag.id;
+  save(); renderAll();
+}
+function onDropSlot(e){
+  if(!drag) return;
+  const zone = e.target.closest("[data-drop='slot']");
+  if(!zone || drag.mode!=="card") return;
+  e.preventDefault(); zone.classList.remove("drag-over");
+  const s = state.timeline.find(x=>x.id===zone.dataset.id);
+  if(!s) return;
+  const src = find(drag.sec, drag.id);
+  s.text = src ? src.text : drag.text; s.refId = drag.id;
+  drag = null;
+  save(); renderAll();
+}
+
+/* ================= 匯總與慶賀 ================= */
+function spawnCelebration(){
+  const layer = $("#confettiLayer");
+  const palette = ["#ff7a59","#ffe9a8","#ffd0cd","#cfe8c9","#c6e2f2","#b68ad0","#58a8a0"];
+  for(let i=0;i<90;i++){
+    const p = el("div","confetti");
+    const size = 6 + Math.random()*8;
+    p.style.cssText = "left:"+(Math.random()*100)+"vw;width:"+size+"px;height:"+(size*1.4)+"px;"+
+      "background:"+palette[i%palette.length]+";border-radius:"+(Math.random()>.5? "50%":"2px")+";"+
+      "animation-duration:"+(1.8+Math.random()*2.2)+"s;animation-delay:"+(Math.random()*1.2)+"s;"+
+      "transform:rotate("+(Math.random()*360)+"deg);z-index:"+(300+Math.floor(Math.random()*50));
+    layer.appendChild(p);
+    setTimeout(()=>p.remove(), 5200);
+  }
+}
+function openCard(){
+  const total = state.budget.reduce((a,b)=>a+(+b.amount||0),0);
+  const per = total / Math.max(1,state.members.length);
+  const cur = (state.lang==="en") ? "$" : "HK$";
+  const fmt = n => n.toLocaleString(state.lang==="en"?"en-US":"zh-HK", {maximumFractionDigits:0});
+  const sdiv = $("#cardStats"); sdiv.innerHTML = "";
+  const stats = [
+    [state.attractions.length+"", t("s.place")],
+    [state.food.length+"", t("s.yum")],
+    [state.tasks.length+"", t("s.task")],
+    [state.tasks.filter(x=>x.assigneeId).length+"", t("s.done")],
+    [cur+fmt(total), t("s.budget")],
+    [cur+fmt(per), t("s.head")]
+  ];
+  stats.forEach(s => {
+    const c = el("div","cell"); c.appendChild(el("b",null,s[0])); c.appendChild(el("span",null,s[1]));
+    sdiv.appendChild(c);
+  });
+  const itin = $("#cardItin"); itin.innerHTML = "";
+  const list = state.timeline.filter(x=>x.text.trim()!=="").filter(Boolean);
+  list.forEach(s => {
+    const li = el("li");
+    li.appendChild(el("span","t", s.time.trim() || "·"));
+    li.appendChild(el("span",null, s.text));
+    itin.appendChild(li);
+  });
+  if(!list.length) itin.style.display = "none";
+  else itin.style.display = "";
+  $("#cardTitle").textContent = t("card.title");
+  $("#cardSub").textContent = state.title ? state.title + " — " + t("celeb.why") : t("celeb.why");
+  $("#veilCard").classList.add("open");
+}
+
+/* ================= 說明指南 ================= */
+function renderHelp(){
+  const b = $("#helpBody");
+  const L = I18N[state.lang] || I18N["en"];
+  b.innerHTML =
+    '<h2>'+L["help.title"]+'</h2>'+
+    '<p class="sub" style="margin-bottom:4px">'+t("help.p7")+'</p>'+
+    '<div class="doc">'+
+      '<h3>'+L["help.h0"]+'</h3><p>'+L["help.p0"]+'</p>'+
+      '<h3>'+L["help.h1"]+'</h3>'+
+      '<h4>'+L["col.att"]+'</h4><p>'+L["help.b1a"]+'</p>'+
+      '<h4>'+L["col.food"]+'</h4><p>'+L["help.b1b"]+'</p>'+
+      '<h4>'+L["col.trans"]+'</h4><p>'+L["help.b1c"]+'</p>'+
+      '<h4>'+L["col.tasks"]+'</h4><p>'+L["help.b1d"]+'</p>'+
+      '<h4>'+L["col.budget"]+'</h4><p>'+L["help.b1e"]+'</p>'+
+      '<h4>'+L["col.time"]+'</h4><p>'+L["help.b1f"]+'</p>'+
+      '<h3>'+L["help.h2"]+'</h3><p>'+L["help.p2"]+'</p>'+
+      '<h3>'+L["help.h3"]+'</h3><p>'+L["help.p3"]+'</p>'+
+      '<h3>'+L["help.h4"]+'</h3><p>'+L["help.p4"]+'</p>'+
+      '<h3>'+L["help.h5"]+'</h3><ul><li>'+L["help.li1"]+'</li><li>'+L["help.li2"]+'</li><li>'+L["help.li3"]+'</li></ul>'+
+      '<h3>'+L["help.h6"]+'</h3>'+
+        '<h4>'+L["help.f1"]+'</h4><p>'+L["help.f1a"]+'</p>'+
+        '<h4>'+L["help.f2"]+'</h4><p>'+L["help.f2a"]+'</p>'+
+        '<h4>'+L["help.f3"]+'</h4><p>'+L["help.f3a"]+'</p>'+
+      '<h3>'+L["help.h7"]+'</h3><p>'+L["help.p7"]+'</p>'+
+    '</div>'+
+    '<div class="actions" style="margin-top:14px"><button class="btn ghost" id="btnCloseHelp">'+L["help.close"]+'</button></div>';
+  $("#btnCloseHelp").addEventListener("click", ()=>$("#veilHelp").classList.remove("open"));
+}
+
+/* ================= 範例資料 ================= */
+function loadExample(){
+  wipe();
+  state.title = (state.lang==="en") ? "Lamma Island Day Trip" : "南丫島一日遊";
+  state.lang = $("#langSel").value;
+  state.members = [
+    {id:uid(), name:"Andy", color:COLORS[0]},
+    {id:uid(), name:"Ming", color:COLORS[1]},
+    {id:uid(), name:"Kitty", color:COLORS[2]}
+  ];
+  const a1=uid(),a2=uid(),a3=uid(),a4=uid(),a5=uid();
+  state.attractions = [
+    {id:a1, text:"榕樹灣大街（手信小店）", likes:3},
+    {id:a2, text:"洪聖爺灣泳灘", likes:5},
+    {id:a3, text:"風力發電站大風車", likes:2},
+    {id:a4, text:"索罟灣天后廟", likes:1}
+  ];
+  state.food = [
+    {id:uid(), text:"蔡記小食 · 咖喱魚蛋", price:"$$"},
+    {id:uid(), text:"天虹海鮮酒家", price:"$$$"},
+    {id:uid(), text:"島上小吃 · 山水豆腐花", price:"$"}
+  ];
+  state.transport = [
+    {id:uid(), text:"中環 4 號碼頭 → 榕樹灣", cost:"$25", time:"25 分鐘"},
+    {id:uid(), text:"南丫島快船（香港仔→榕樹灣）", cost:"$30", time:"20 分鐘"}
+  ];
+  const t1=uid(),t2=uid(),t3=uid(),t4=uid();
+  state.tasks = [
+    {id:t1, text:"訂船票＋確認船期", assigneeId:state.members[0].id},
+    {id:t2, text:"預訂餐廳（12 人）", assigneeId:state.members[1].id},
+    {id:t3, text:"準備防曬＋泳具", assigneeId:state.members[2].id},
+    {id:t4, text:"查天氣＋雨天備案", assigneeId:state.members[0].id}
+  ];
+  state.budget = [
+    {id:uid(), label:"來回船票", amount:50},
+    {id:uid(), label:"海鮮午餐", amount:130},
+    {id:uid(), label:"飲品小食", amount:40},
+    {id:uid(), label:"（機動）紀念品", amount:60}
+  ];
+  state.timeline = [
+    {id:uid(), time:"09:30", text:"中環 4 號碼頭集合", refId:null},
+    {id:uid(), time:"10:00", text:"榕樹灣大街逛街", refId:null},
+    {id:uid(), time:"12:30", text:"天虹海鮮午餐", refId:null},
+    {id:uid(), time:"15:00", text:"洪聖爺灣泳灘", refId:null},
+    {id:uid(), time:"17:30", text:"回程", refId:null}
+  ];
+  state.completed = false;
+  save(); renderAll();
+}
+
+/* ================= 確認彈窗 ================= */
+let cfCb = null;
+function showConfirm(msg, cb){
+  $("#cfMsg").textContent = msg;
+  $("#cfYes").textContent = t("ok");
+  $("#cfNo").textContent = t("cancel");
+  cfCb = cb;
+  $("#veilConfirm").classList.add("open");
+}
+function closeConfirm(){ $("#veilConfirm").classList.remove("open"); cfCb = null; }
+
+/* ================= 事件綁定 ================= */
+function bind(){
+  $("#langSel").addEventListener("change", applyLang);
+
+  $("#btnExample").addEventListener("click", loadExample);
+  $("#btnReset").addEventListener("click", ()=>{
+    showConfirm(t("resetMsg"), ()=>{ wipe(); bindStatic(); $("#board").scrollLeft = 0; renderAll(); });
+  });
+  $("#btnShowCard").addEventListener("click", openCard);
+  $("#btnAgain").addEventListener("click", ()=>{
+    $("#veilCard").classList.remove("open");
+    showConfirm(t("resetMsg"), ()=>{ wipe(); bindStatic(); $("#board").scrollLeft = 0; renderAll(); });
+  });
+  $("#btnCloseCard").addEventListener("click", ()=>$("#veilCard").classList.remove("open"));
+  $("#btnHelp").addEventListener("click", ()=>{ renderHelp(); $("#veilHelp").classList.add("open"); });
+  $("#veilCard").addEventListener("click", e=>{ if(e.target.id==="veilCard") e.target.classList.remove("open"); });
+  $("#veilHelp").addEventListener("click", e=>{ if(e.target.id==="veilHelp") e.target.classList.remove("open"); });
+  $("#cfYes").addEventListener("click", ()=>{ const cb = cfCb; closeConfirm(); if(cb) cb(); });
+  $("#cfNo").addEventListener("click", closeConfirm);
+  $("#veilConfirm").addEventListener("click", e=>{ if(e.target.id==="veilConfirm") closeConfirm(); });
+
+  $("#boardTitle").addEventListener("input", e=>{ state.title = e.target.textContent; save(); });
+
+  // 欄位內互動（點擊）
+  $("#cols").addEventListener("click", e=>{
+    const a = e.target.closest("[data-action]");
+    if(!a) return;
+    const act = a.dataset.action;
+    if(act==="add"){ addCard(a.dataset.sec); }
+    else if(act==="del"){ delCard(a.dataset.sec, a.dataset.id, false); }
+    else if(act==="heart"){ const c = find("attractions", a.dataset.id); if(c){ c.likes = (c.likes||0)+1; save(); renderAll(); } }
+    else if(act==="delMem"){ delMember(a.dataset.id); }
+    else if(act==="unassign"){ unassign(a.dataset.id); }
+    else if(act==="delSlot"){ delSlot(a.dataset.id); }
+  });
+
+  // 內容編輯（contenteditable / 輸入框）
+  $("#cols").addEventListener("input", e=>{
+    const elTarget = e.target;
+    if(elTarget.matches(".nt")){
+      const c = find(elTarget.dataset.sec, elTarget.dataset.id); if(c){ c.text = elTarget.textContent; save(); }
+    }else if(elTarget.matches(".tl-time")){
+      const s = state.timeline.find(x=>x.id===elTarget.dataset.id); if(s){ s.time = elTarget.value; save(); }
+    }else if(elTarget.matches(".tl-text")){
+      const s = state.timeline.find(x=>x.id===elTarget.dataset.id); if(s){ s.text = elTarget.textContent; save(); renderChecklist(); }
+    }else if(elTarget.matches("input[data-f]")){
+      const c = find("budget", elTarget.dataset.id); if(c){
+        if(elTarget.dataset.f==="label") c.label = elTarget.value;
+        else c.amount = parseFloat(elTarget.value) || 0;
+        save(); renderChecklist();
+        // 只重繪總計，避免輸入失去焦點
+        const sumEl = $("#cols .budget-sum");
+        if(elTarget.dataset.f==="amount" && sumEl){
+          const total = state.budget.reduce((a,b)=>a+(+b.amount||0),0);
+          const members = Math.max(1, state.members.length);
+          const cur = state.lang==="en" ? "$" : "HK$";
+          const fmt = n => n.toLocaleString(state.lang==="en"?"en-US":"zh-HK", {maximumFractionDigits:0});
+          sumEl.querySelector(".big").textContent = cur+fmt(total);
+          sumEl.querySelector(".per").textContent = t("t.full")+" ≈ "+cur+fmt(total/members)+" · "+state.members.length+" "+t("t.members");
+        }
+      }
+    }
+  });
+
+  // 成員新增
+  const addMemberBtn = document.querySelector("#cols");
+  addMemberBtn.addEventListener("click", e=>{
+    if(e.target.classList.contains("btn") && e.target.textContent.trim()===t("add.member")){
+      const row = e.target.closest(".addrow"); const inp = row.querySelector("input");
+      const name = inp.value.trim();
+      if(name){ state.members.push({id:uid(), name, color:COLORS[state.members.length % COLORS.length]}); save(); renderAll(); }
+    }
+  });
+}
+
+/* ================= 啟動 ================= */
+load();
+document.documentElement.lang = state.lang;
+bindStatic();
+renderAll();
+bind();
+</script>
+</body>
+</html>

@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#17110e">
+<title>LUNCH·O·MATIC 午餐吃什麼</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Noto+Sans+TC:wght@400;700;900&family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   設計系統：Lunch-O-Matic —— 夜市霓虹 × 抽籤機
+   暗色暖底 + 高飽和糖果色，營造「猶豫就交給命運」的餐廳板
+   ============================================================ */
+:root{
+  --bg:#17110e; --panel:#221a14; --panel2:#2a2018; --line:#3c2e23;
+  --cream:#fff3dd; --cream2:#ffe9c0; --ink:#2b1e13;
+  --coral:#ff5a36; --coral2:#ff7a55; --amber:#ffb31f; --lemon:#ffd84d;
+  --pink:#ff4d8d; --mint:#3ed98c; --sky:#3fb8f0; --lav:#a86bff; --teal:#2ec4a6;
+  --muted:#c9b393; --faint:#8a7a63;
+  --f-display:'Baloo 2','Noto Sans TC','Noto Sans SC',sans-serif;
+  --f-body:'Noto Sans TC','Noto Sans SC',system-ui,sans-serif;
+  --shadow:0 18px 50px rgba(0,0,0,.55);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%;}
+body{
+  font-family:var(--f-body); color:var(--cream); background:var(--bg);
+  min-height:100vh; overflow-x:hidden;
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(255,90,54,.16), transparent 34%),
+    radial-gradient(circle at 88% 20%, rgba(168,107,255,.14), transparent 36%),
+    radial-gradient(circle at 50% 120%, rgba(255,179,31,.12), transparent 42%),
+    radial-gradient(rgba(255,243,221,.05) 1px, transparent 1.4px) 0 0/26px 26px;
+}
+body::after{
+  content:""; position:fixed; inset:0; pointer-events:none; opacity:.5; z-index:50;
+  background:radial-gradient(rgba(0,0,0,.22) 1px, transparent 1px);
+  background-size:3px 3px;
+}
+
+/* ---------- 頂欄 ---------- */
+.topbar{
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  padding:16px 22px; border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg, rgba(34,26,20,.9), rgba(23,17,14,.4));
+  position:sticky; top:0; z-index:40; backdrop-filter:blur(8px);
+}
+.logo{display:flex; align-items:center; gap:12px;}
+.logo .badge{
+  width:46px;height:46px;border-radius:14px;background:var(--coral);
+  display:grid;place-items:center;font-size:26px;transform:rotate(-6deg);
+  box-shadow:0 6px 18px rgba(255,90,54,.45), inset 0 2px 0 rgba(255,255,255,.35);
+  animation:logoPop .6s cubic-bezier(.2,1.4,.4,1) both;
+}
+@keyframes logoPop{from{transform:rotate(-24deg) scale(.4);opacity:0;}to{transform:rotate(-6deg) scale(1);opacity:1;}}
+.logo h1{font-family:var(--f-display); font-size:26px; line-height:1; letter-spacing:.5px; font-weight:800;}
+.logo h1 .en{color:var(--amber);}
+.logo small{display:block;font-size:12px;color:var(--muted);margin-top:2px;font-weight:400;}
+.stat{display:flex;gap:14px;margin-left:auto;align-items:center;}
+.stat div{text-align:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 12px;}
+.stat b{display:block;font-family:var(--f-display);font-size:20px;color:var(--amber);line-height:1;}
+.stat span{font-size:11px;color:var(--faint);}
+
+/* 語言切換 */
+.langsel{display:flex;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px;}
+.langsel button{
+  border:none;background:transparent;color:var(--muted);font-family:var(--f-body);
+  font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;cursor:pointer;transition:all .15s;
+}
+.langsel button.on{background:var(--amber);color:var(--ink);}
+
+/* ---------- 主區 ---------- */
+main{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,1fr);gap:24px;padding:26px 22px;max-width:1180px;margin:0 auto;}
+
+/* ---------- 左：轉盤舞台 ---------- */
+.stage{display:flex;flex-direction:column;align-items:center;gap:20px;}
+.wheel-wrap{position:relative;width:min(80vw,440px);aspect-ratio:1;filter:drop-shadow(0 22px 44px rgba(0,0,0,.5));}
+.wheel-wrap canvas{width:100%;height:100%;display:block;animation:wheelIn .5s cubic-bezier(.2,1.3,.4,1) both;}
+@keyframes wheelIn{from{transform:scale(.7) rotate(-14deg);opacity:0;}to{transform:scale(1) rotate(0);opacity:1;}}
+.pointer{
+  position:absolute;top:-6px;left:50%;transform:translateX(-50%);z-index:6;
+  filter:drop-shadow(0 6px 10px rgba(0,0,0,.5));animation:pointerBob 2.4s ease-in-out infinite;
+}
+@keyframes pointerBob{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(-4px);}}
+.wheel-wrap .hint{position:absolute;left:50%;bottom:-30px;transform:translateX(-50%);font-size:12px;color:var(--faint);white-space:nowrap;}
+
+/* 大轉鈕 */
+.spinbtn{
+  font-family:var(--f-display); font-weight:800; font-size:20px; letter-spacing:2px;
+  color:#fff; background:linear-gradient(180deg,var(--coral2),var(--coral));
+  border:none; border-radius:999px; padding:16px 52px; cursor:pointer;
+  box-shadow:0 10px 30px rgba(255,90,54,.5), inset 0 2px 0 rgba(255,255,255,.35), inset 0 -4px 8px rgba(0,0,0,.18);
+  transition:transform .15s, box-shadow .15s; position:relative; overflow:hidden;
+}
+.spinbtn:hover{transform:translateY(-2px) scale(1.03);}
+.spinbtn:active{transform:translateY(1px) scale(.98);}
+.spinbtn:disabled{filter:grayscale(.6);cursor:not-allowed;transform:none;}
+.spinbtn:not(:disabled)::after{
+  content:"✨";position:absolute;animation:spark 1.4s ease-in-out infinite;
+}
+@keyframes spark{0%,100%{opacity:0;transform:translate(180px,0);}40%,70%{opacity:1;} }
+.spinrow{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;align-items:center;}
+.ghostbtn{
+  font-family:var(--f-body);font-weight:700;font-size:14px;color:var(--cream);
+  background:var(--panel2);border:1.5px solid var(--line);border-radius:999px;padding:12px 20px;cursor:pointer;
+  transition:border .15s, background .15s;
+}
+.ghostbtn:hover{border-color:var(--amber);background:#332619;}
+
+/* 結果卡 */
+.result{
+  width:min(80vw,440px); background:var(--cream); color:var(--ink);border-radius:20px;
+  padding:18px 22px; box-shadow:var(--shadow); border:3px solid var(--amber);
+  display:flex;gap:16px;align-items:center; animation:resPop .45s cubic-bezier(.2,1.4,.4,1) both;
+}
+@keyframes resPop{from{transform:scale(.6) translateY(14px);opacity:0;}to{transform:scale(1) translateY(0);opacity:1;}}
+.result .r-emoji{font-size:52px;line-height:1;filter:drop-shadow(0 4px 8px rgba(0,0,0,.25));}
+.result .r-main{flex:1;min-width:0;}
+.result .r-name{font-family:var(--f-display);font-size:20px;font-weight:800;line-height:1.2;overflow-wrap:anywhere;}
+.result .r-tags{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;}
+.tag{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--cream2);border:1px solid rgba(43,30,19,.15);}
+.tag.cat{background:var(--coral);color:#fff;border:none;}
+.result .r-acts{display:flex;flex-direction:column;gap:8px;}
+.result .r-acts .ghostbtn{padding:9px 14px;font-size:13px;color:var(--ink);background:transparent;}
+.result .r-acts .ghostbtn.hate{border-color:#f2b7ad;color:#c34;}
+.result .r-acts .ghostbtn.hate:hover{border-color:#ff5a36;background:#ffe4dd;}
+
+/* ---------- 右：面板 ---------- */
+.panel{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:20px;box-shadow:0 10px 30px rgba(0,0,0,.3);}
+.panel h2{font-family:var(--f-display);font-size:15px;font-weight:700;color:var(--cream);display:flex;align-items:center;gap:8px;margin-bottom:14px;text-transform:uppercase;letter-spacing:1px;}
+.panel h2 .dot{width:9px;height:9px;border-radius:50%;background:var(--amber);box-shadow:0 0 10px var(--amber);}
+.cats{display:flex;gap:8px;flex-wrap:wrap;}
+.chip{
+  font-size:13px;font-weight:700;color:var(--muted);background:transparent;
+  border:1.5px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer;transition:all .15s;
+}
+.chip:hover{color:var(--cream);border-color:var(--faint);}
+.chip.on{background:var(--coral);color:#fff;border-color:var(--coral);box-shadow:0 4px 14px rgba(255,90,54,.4);}
+.chip em{font-style:normal;font-size:11px;opacity:.7;margin-left:3px;}
+.prices{display:flex;gap:8px;margin-top:12px;align-items:center;}
+.prices .chip{flex:1;text-align:center;}
+
+/* 餐廳庫 */
+.pantry{max-height:340px;overflow:auto;padding-right:4px;}
+.item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:12px;border:1px solid transparent;transition:background .15s;}
+.item:hover{background:rgba(255,255,255,.04);}
+.item .ico{width:40px;height:40px;flex:none;border-radius:11px;background:var(--panel2);border:1px solid var(--line);display:grid;place-items:center;font-size:20px;}
+.item .nm{flex:1;min-width:0;}
+.item .nm b{display:block;font-size:15px;line-height:1.2;}
+.item .nm .meta{font-size:11px;color:var(--faint);margin-top:2px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.item .x{flex:none;width:28px;height:28px;border-radius:50%;border:none;background:transparent;color:var(--faint);font-size:16px;cursor:pointer;}
+.item .x:hover{background:rgba(255,90,54,.18);color:var(--coral);}
+.item.excl{opacity:.5;}
+.item.excl .nm b{text-decoration:line-through;}
+.addrow{
+  margin-top:10px;border:1.5px dashed var(--line);border-radius:12px;color:var(--muted);
+  width:100%;padding:11px;background:transparent;font-size:14px;font-weight:700;cursor:pointer;
+}
+.addrow:hover{color:var(--amber);border-color:var(--amber);}
+
+/* 已排除 */
+.exclrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.exclrow .tag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,90,54,.16);border-color:rgba(255,90,54,.4);color:var(--cream);}
+.exclrow .tag button{border:none;background:none;color:var(--cream);cursor:pointer;font-size:13px;line-height:1;}
+
+/* ---------- 歷史 ---------- */
+.histstrip{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin;}
+.histchip{
+  flex:none;display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;
+  background:var(--panel2);border:1px solid var(--line);color:var(--cream);cursor:pointer;
+  font-size:13px;transition:transform .12s,border .12s;font-family:var(--f-display);
+}
+.histchip:hover{transform:translateY(-2px);border-color:var(--amber);}
+.histchip .t{color:var(--faint);font-size:11px;font-family:var(--f-body);}
+.empty{color:var(--faint);font-size:13px;padding:6px 0;}
+
+/* ---------- Modal ---------- */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);display:none;place-items:center;z-index:60;padding:20px;}
+.modal-bg.open{display:grid;}
+.modal{width:min(480px,100%);background:var(--cream);color:var(--ink);border-radius:20px;padding:24px;animation:resPop .35s cubic-bezier(.2,1.3,.4,1) both;}
+.modal h3{font-family:var(--f-display);font-size:20px;font-weight:800;margin-bottom:4px;}
+.modal p{font-size:13px;color:rgba(43,30,19,.6);margin-bottom:16px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:12px;font-weight:700;margin-bottom:6px;color:rgba(43,30,19,.7);}
+.field input,.field select{
+  width:100%;font-family:var(--f-body);font-size:15px;padding:11px 12px;border-radius:10px;
+  border:1.5px solid rgba(43,30,19,.25);background:#fff;color:var(--ink);
+}
+.field:focus-within input,.field:focus-within select{border-color:var(--coral);outline:none;}
+.emojis{display:flex;gap:6px;flex-wrap:wrap;}
+.emojis button{font-size:20px;width:42px;height:42px;border-radius:10px;border:1.5px solid rgba(43,30,19,.18);background:#fff;cursor:pointer;}
+.emojis button.on{border-color:var(--coral);background:#ffe3db;box-shadow:0 0 0 2px rgba(255,90,54,.3);}
+.modal .row{display:flex;gap:10px;margin-top:18px;}
+.modal .row button{flex:1;padding:12px;border-radius:12px;font-weight:800;font-family:var(--f-display);cursor:pointer;border:none;font-size:15px;}
+.modal .row .save{background:linear-gradient(180deg,var(--coral2),var(--coral));color:#fff;box-shadow:0 6px 16px rgba(255,90,54,.4);}
+.modal .row .cancel{background:#eee;color:var(--ink);}
+
+/* ---------- Toast / footer ---------- */
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
+  background:var(--cream);color:var(--ink);font-weight:700;font-size:14px;padding:12px 20px;border-radius:999px;
+  opacity:0;pointer-events:none;transition:all .3s;box-shadow:var(--shadow);z-index:70;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+footer{
+  text-align:center;padding:22px;border-top:1px solid var(--line);color:var(--faint);font-size:12.5px;line-height:1.8;
+}
+footer b{color:var(--amber);}
+
+/* 響應式 */
+@media(max-width:860px){
+  main{grid-template-columns:1fr;padding:18px 14px;}
+  .stat{display:none;}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo">
+    <div class="badge">🎡</div>
+    <div>
+      <h1><span class="en">LUNCH·O·MATIC</span></h1>
+      <small id="logoSub">今天午餐吃什麼？交給命運 🍜</small>
+    </div>
+  </div>
+  <div class="langsel" id="langSel">
+    <button data-lang="zh-TW" class="on">繁</button>
+    <button data-lang="zh-CN">简</button>
+    <button data-lang="en">EN</button>
+  </div>
+  <div class="stat">
+    <div><b id="stCount">0</b><span id="lblRest">餐廳</span></div>
+    <div><b id="stDecide">0</b><span id="lblDecide">已決定</span></div>
+    <button class="ghostbtn" id="btnReset" title="">🗑 重置</button>
+  </div>
+</header>
+
+<main>
+  <!-- 左：轉盤 -->
+  <section class="stage">
+    <div class="wheel-wrap">
+      <div class="pointer">
+        <svg width="46" height="54" viewBox="0 0 46 54">
+          <path d="M23 54 L40 24 H30 V0 H16 V24 H6 Z" fill="#ff5a36" stroke="#2b1e13" stroke-width="3"/>
+          <circle cx="23" cy="40" r="4.5" fill="#ffe9c0"/>
+        </svg>
+      </div>
+      <canvas id="wheel" width="440" height="440"></canvas>
+      <div class="hint" id="wheelHint"></div>
+    </div>
+
+    <div class="spinrow">
+      <button class="spinbtn" id="btnSpin"></button>
+      <button class="ghostbtn" id="btnReroll"></button>
+    </div>
+
+    <div class="result" id="result" style="display:none">
+      <div class="r-emoji" id="resEmoji">🍱</div>
+      <div class="r-main">
+        <div class="r-name" id="resName"></div>
+        <div class="r-tags" id="resTags"></div>
+      </div>
+      <div class="r-acts">
+        <button class="ghostbtn" id="resRetry"></button>
+        <button class="ghostbtn" id="resNext"></button>
+        <button class="ghostbtn hate" id="resHate"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 右：篩選＋餐廳庫 -->
+  <aside>
+    <div class="panel">
+      <h2><span class="dot"></span><span id="hExplore">現在想吃？</span></h2>
+      <div class="cats" id="catChips"></div>
+      <div class="prices">
+        <button class="chip on" data-p="0"></button>
+        <button class="chip" data-p="1"></button>
+        <button class="chip" data-p="2"></button>
+        <button class="chip" data-p="3"></button>
+      </div>
+      <div class="exclrow" id="exclRow" style="display:none"></div>
+    </div>
+
+    <div class="panel">
+      <h2><span class="dot"></span><span id="hList">我的口袋名單</span></h2>
+      <div class="pantry" id="pantry"></div>
+      <button class="addrow" id="btnAddNew"></button>
+    </div>
+  </aside>
+
+  <!-- 歷史 -->
+  <section class="panel" style="grid-column:1/-1;margin-bottom:0;">
+    <h2><span class="dot"></span><span id="hHist">決定紀錄</span></h2>
+    <div class="histstrip" id="history"></div>
+  </section>
+</main>
+
+<footer id="footer" style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+  <div style="height:3px;background:linear-gradient(90deg,var(--coral),var(--amber),var(--mint),var(--sky),var(--lav));width:120px;border-radius:99px;margin-bottom:8px;"></div>
+  <b id="ftB">本頁僅為展示用 Demo</b>
+  <span id="ftTxt">資料只存在於你的瀏覽器（localStorage）・無後端・無法與他人同步・非真實服務</span>
+</footer>
+
+<!-- 新增餐廳 Modal -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h3 id="mTitle">加入口袋名單 🍽️</h3>
+    <p id="mP">輸入你常光顧的店，之後就能丟進轉盤。</p>
+    <div class="field"><label id="lblIcon">代表圖示</label><div class="emojis" id="emojiPick"></div></div>
+    <div class="field"><label id="lblName">餐廳名稱</label><input id="inName" maxlength="12"></div>
+    <div class="field"><label id="lblCat">分類</label>
+      <select id="inCat"></select>
+    </div>
+    <div class="field"><label id="lblPrice">價格</label>
+      <select id="inPrice"></select>
+    </div>
+    <div class="row">
+      <button class="save" id="modalSave"></button>
+      <button class="cancel" id="modalCancel"></button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   Lunch-O-Matic — 單機 Demo：無後端，資料存 localStorage
+   支援 繁中 / 簡中 / English 三語
+   ============================================================ */
+'use strict';
+
+/* ---------- 種子資料（k = 多語名稱鍵，cat 用分類鍵） ---------- */
+const SEEDS = [
+  {k:'pork',   emoji:'🍱', cat:'tw',    price:2},
+  {k:'roast',  emoji:'🍖', cat:'hk',    price:2},
+  {k:'ramen',  emoji:'🍜', cat:'jp',    price:2},
+  {k:'kfried', emoji:'🍗', cat:'kr',    price:2},
+  {k:'padkrap',emoji:'🥘', cat:'th',    price:2},
+  {k:'burger', emoji:'🍔', cat:'us',    price:3},
+  {k:'pasta',  emoji:'🍝', cat:'it',    price:3},
+  {k:'hotpot', emoji:'🌶️', cat:'hotpot',price:3},
+  {k:'shacha', emoji:'🥩', cat:'tw',    price:3},
+  {k:'brunch', emoji:'🥞', cat:'light', price:1},
+  {k:'vegie',  emoji:'🥬', cat:'light', price:1},
+  {k:'gratin', emoji:'🧀', cat:'west',  price:2},
+  {k:'luwei',  emoji:'🥢', cat:'tw',    price:1},
+  {k:'waffle', emoji:'🍧', cat:'dessert',price:2},
+];
+const CATS = ['tw','hk','jp','kr','th','us','it','hotpot','light','west','dessert'];
+/* 舊版資料的中文分類 → 分類鍵 */
+const OLD_CAT = {'台式':'tw','港式':'hk','日式':'jp','韓式':'kr','泰式':'th','美式':'us','義式':'it','火鍋':'hotpot','輕食':'light','甜品':'dessert','西式':'west'};
+
+const KEY = 'lunchom_v1', LANGKEY = 'lunchom_lang';
+
+/* ---------- i18n 字典 ---------- */
+const I18N = {
+'zh-TW':{
+  sub:'今天午餐吃什麼？交給命運 🍜',
+  lblRest:'餐廳', lblDecide:'已決定', reset:'🗑 重置', resetTitle:'清除瀏覽器內的餐廳與歷史資料',
+  spin:'開始轉！', spinning:'轉動中…', reroll:'🔁 換一間',
+  resRetry:'🎯 再轉一次', resNext:'🔁 換一間', resHate:'👎 不喜歡',
+  hExplore:'現在想吃？', hList:'我的口袋名單', hHist:'決定紀錄',
+  all:'全部', priceAll:'全部價格', price1:'$ 銅板', price2:'$$ 日常', price3:'$$$ 犒賞',
+  addrow:'＋ 加入新餐廳',
+  pantryEmpty:'名單空空如也，先加幾家吧～',
+  histEmpty:'還沒有決定紀錄，去轉第一圈吧！',
+  ftB:'本頁僅為展示用 Demo',
+  ftTxt:'資料只存在於你的瀏覽器（localStorage）・無後端・無法與他人同步・非真實服務',
+  mTitle:'加入口袋名單 🍽️', mP:'輸入你常光顧的店，之後就能丟進轉盤。',
+  lblIcon:'代表圖示', lblName:'餐廳名稱', lblCat:'分類', lblPrice:'價格',
+  phName:'例如：巷口滷肉飯', save:'✓ 加入', cancel:'取消',
+  winTimes:'抽中 {n} 次', turn:'轉', hintN:'家餐廳在轉盤上', hintFilter:'（已套用篩選）',
+  lst:['先加入幾家餐廳','再開始轉 😋'], wheelHintEmpty:'口袋名單還沒東西，先按「＋ 加入新餐廳」',
+  tNeed2:'至少要 2 家才能轉', tRemoved:'已移除 🗑', tRestored:'已放回合名單 ✅',
+  tGone:'這家已被移除或排除 😅', tSpinWait:'還在轉喔～', tFiltered:'這家已被篩掉囉',
+  tHated:'已將「{n}」從本次消失 👌', tReset:'已重置為初始資料 🔄',
+  tNeedName:'幫餐廳取個名字吧 📝', tAdded:'「{n}」已加入轉盤 🎉',
+  tHistTip:'點一下：指定轉到這家', tSaveFail:'儲存失敗（瀏覽器可能禁用 localStorage）',
+  delConfirm:'確定要把「{n}」從名單移除？', resetConfirm:'清除所有餐廳、排除與決定紀錄，恢復初始資料？',
+  catTw:'台式', catHk:'港式', catJp:'日式', catKr:'韓式', catTh:'泰式',
+  catUs:'美式', catIt:'義式', catHot:'火鍋', catLight:'輕食', catWest:'西式', catDessert:'甜品',
+  pv1:'$ 銅板價', pv2:'$$ 日常食堂', pv3:'$$$ 偶爾犒賞',
+  seed_pork:'排骨便當', seed_roast:'燒臘飯', seed_ramen:'豚骨拉麵', seed_kfried:'韓式炸雞',
+  seed_padkrap:'打拋豬飯', seed_burger:'美式漢堡', seed_pasta:'義式麵', seed_hotpot:'麻辣鍋',
+  seed_shacha:'沙茶牛麵', seed_brunch:'蛋餅套餐', seed_vegie:'素食自助', seed_gratin:'焗烤飯',
+  seed_luwei:'滷味', seed_waffle:'冰品鬆餅',
+},
+'zh-CN':{
+  sub:'今天午饭吃什么？交给命运 🍜',
+  lblRest:'餐厅', lblDecide:'已决定', reset:'🗑 重置', resetTitle:'清除浏览器内的餐厅与历史资料',
+  spin:'开始转！', spinning:'转动中…', reroll:'🔁 换一家',
+  resRetry:'🎯 再转一次', resNext:'🔁 换一家', resHate:'👎 不喜欢',
+  hExplore:'现在想吃？', hList:'我的口袋名单', hHist:'决定记录',
+  all:'全部', priceAll:'全部价位', price1:'$ 平价', price2:'$$ 日常', price3:'$$$ 犒赏',
+  addrow:'＋ 加入新餐厅',
+  pantryEmpty:'名单空空如也，先加几家吧～',
+  histEmpty:'还没有决定记录，去转第一圈吧！',
+  ftB:'本页仅为展示用 Demo',
+  ftTxt:'资料只存在于你的浏览器（localStorage）・无后端・无法与他人同步・非真实服务',
+  mTitle:'加入口袋名单 🍽️', mP:'输入你常光顾的店，之后就能丢进转盘。',
+  lblIcon:'代表图标', lblName:'餐厅名称', lblCat:'分类', lblPrice:'价位',
+  phName:'例如：巷口卤肉饭', save:'✓ 加入', cancel:'取消',
+  winTimes:'抽中 {n} 次', turn:'转', hintN:'家餐厅在转盘上', hintFilter:'（已套用筛选）',
+  lst:['先加入几家餐厅','再开始转 😋'], wheelHintEmpty:'口袋名单还没东西，先按「＋ 加入新餐厅」',
+  tNeed2:'至少要 2 家才能转', tRemoved:'已移除 🗑', tRestored:'已放回名单 ✅',
+  tGone:'这家已被移除或排除 😅', tSpinWait:'还在转喔～', tFiltered:'这家已被筛掉囉',
+  tHated:'已将「{n}」从本次消失 👌', tReset:'已重置为初始数据 🔄',
+  tNeedName:'帮餐厅取个名字吧 📝', tAdded:'「{n}」已加入转盘 🎉',
+  tHistTip:'点一下：指定转到这家', tSaveFail:'保存失败（浏览器可能禁用 localStorage）',
+  delConfirm:'确定要把「{n}」从名单移除？', resetConfirm:'清除所有餐厅、排除与决定记录，恢复初始数据？',
+  catTw:'台式', catHk:'港式', catJp:'日式', catKr:'韩式', catTh:'泰式',
+  catUs:'美式', catIt:'意式', catHot:'火锅', catLight:'轻食', catWest:'西餐', catDessert:'甜品',
+  pv1:'$ 平价', pv2:'$$ 日常食堂', pv3:'$$$ 偶尔犒赏',
+  seed_pork:'排骨便当', seed_roast:'烧腊饭', seed_ramen:'豚骨拉面', seed_kfried:'韩式炸鸡',
+  seed_padkrap:'打抛猪饭', seed_burger:'美式汉堡', seed_pasta:'意面', seed_hotpot:'麻辣锅',
+  seed_shacha:'沙茶牛面', seed_brunch:'蛋饼套餐', seed_vegie:'素食自助', seed_gratin:'焗烤饭',
+  seed_luwei:'卤味', seed_waffle:'冰品松饼',
+},
+en:{
+  sub:'What\'s for lunch today? Leave it to fate 🍜',
+  lblRest:'Places', lblDecide:'Picks', reset:'🗑 Reset', resetTitle:'Clear restaurants & history stored in this browser',
+  spin:'SPIN!', spinning:'Spinning…', reroll:'🔁 Reroll',
+  resRetry:'🎯 Spin again', resNext:'🔁 Reroll', resHate:'👎 Nope',
+  hExplore:'What are you craving?', hList:'My Favorites', hHist:'Pick History',
+  all:'All', priceAll:'Any price', price1:'$ Cheap', price2:'$$ Daily', price3:'$$$ Treat',
+  addrow:'＋ Add a place',
+  pantryEmpty:'Nothing here yet — add a few places!',
+  histEmpty:'No picks yet. Spin the wheel!',
+  ftB:'This page is a demo only',
+  ftTxt:'Data lives in your browser only (localStorage) · no backend · not shared · not a real service',
+  mTitle:'Add to Favorites 🍽️', mP:'Add places you love, then drop them on the wheel.',
+  lblIcon:'Icon', lblName:'Restaurant', lblCat:'Category', lblPrice:'Price',
+  phName:'e.g. Corner Braised Pork', save:'✓ Add', cancel:'Cancel',
+  winTimes:'Won {n}×', turn:'spins', hintN:'on the wheel', hintFilter:'(filtered)',
+  lst:['Add a few places','then spin 😋'], wheelHintEmpty:'Nothing in the list yet — tap "＋ Add a place"',
+  tNeed2:'Need at least 2 places to spin', tRemoved:'Removed 🗑', tRestored:'Back on the list ✅',
+  tGone:'That one is gone or excluded 😅', tSpinWait:'Still spinning…', tFiltered:'Filtered out 😅',
+  tHated:'"{n}" is out for now 👌', tReset:'Reset to default data 🔄',
+  tNeedName:'Give it a name 📝', tAdded:'"{n}" added to the wheel 🎉',
+  tHistTip:'Click to spin to this one', tSaveFail:'Save failed (localStorage may be disabled)',
+  delConfirm:'Remove "{n}" from the list?', resetConfirm:'Clear all places, exclusions & history, restore defaults?',
+  catTw:'Taiwanese', catHk:'Cantonese', catJp:'Japanese', catKr:'Korean', catTh:'Thai',
+  catUs:'American', catIt:'Italian', catHot:'Hotpot', catLight:'Light', catWest:'Western', catDessert:'Dessert',
+  pv1:'$ Budget', pv2:'$$ Daily', pv3:'$$$ Treat',
+  seed_pork:'Pork Chop Bento', seed_roast:'Roast Meat Rice', seed_ramen:'Tonkotsu Ramen', seed_kfried:'Korean Fried Chicken',
+  seed_padkrap:'Thai Basil Pork', seed_burger:'Smash Burger', seed_pasta:'Pasta', seed_hotpot:'Spicy Hotpot',
+  seed_shacha:'Satay Beef Noodle', seed_brunch:'Egg Pancake Set', seed_vegie:'Veggie Buffet', seed_gratin:'Baked Rice',
+  seed_luwei:'Braised Deli', seed_waffle:'Ice-Cream Waffle',
+}
+};
+
+/* ---------- 狀態 ---------- */
+let LANG = 'zh-TW';
+let state = {restaurants:[], history:[], decided:0, lastId:0};
+let filter = {cat:'all', price:0};
+let spinning = false;
+let lastWinner = null;
+
+/* ---------- i18n 工具 ---------- */
+function t(path, vars){
+  let o = I18N[LANG];
+  const parts = path.split('.');
+  for(const p of parts){ o = o && o[p]; }
+  let v = (o===undefined||o===null) ? path : o;
+  if(vars){ for(const k in vars){ v = String(v).replaceAll('{'+k+'}', vars[k]); } }
+  return v;
+}
+const catName = k => t('cat' + (k==='hot'?'Hot':k==='light'?'Light':k==='west'?'West':k==='dessert'?'Dessert':k.charAt(0).toUpperCase()+k.slice(1)));
+const catLongName = k => catName(k);
+
+/* ---------- DOM ---------- */
+const $ = id => document.getElementById(id);
+const wheel = $('wheel'), ctx = wheel.getContext('2d');
+let rot = 0, segA = 0, visible = [];
+const WHEEL_COLORS = ['#ff5a36','#ffb31f','#3ed98c','#3fb8f0','#a86bff','#ff4d8d','#ffd84d','#2ec4a6'];
+
+/* ---------- 資料工具 ---------- */
+function rName(r){ return (r.k && I18N[LANG]['seed_'+r.k]) || r.name || ''; }
+function normCat(c){ return OLD_CAT[c] || c || 'tw'; }
+/* 舊資料遷移：中文名稱 → 對應種子餐廳語意鍵，使其可隨語言轉譯 */
+function migrateLegacySeeds(r){
+  if(r.k) return false;
+  const nm = (r.name||'').trim();
+  if(!nm) return false;
+  for(const s of SEEDS){
+    const names = [I18N['zh-TW']['seed_'+s.k], I18N['zh-CN']['seed_'+s.k], I18N['en']['seed_'+s.k]];
+    if(names.some(n=>n===nm)){ r.k = s.k; r.name=''; return true; }
+  }
+  return false;
+}
+function newId(){ state.lastId += 1; return state.lastId; }
+
+/* ---------- 載入／儲存 ---------- */
+function load(){
+  try{ const raw = localStorage.getItem(KEY); if(raw){ state = JSON.parse(raw); } }catch(e){}
+  if(!Array.isArray(state.restaurants) || state.restaurants.length===0){
+    state.restaurants = SEEDS.map((s,i)=>({id:i+1, k:s.k, name:'', cat:s.cat, price:s.price, spins:0, excl:false}));
+    state.lastId = SEEDS.length;
+    if(!state.decided) state.decided = 0;
+    save();
+  }
+  /* 舊資料遷移：分類鍵統一、中文名對應種子鍵 */
+  let dirty = false;
+  state.restaurants.forEach(r=>{
+    if(r.cat){ const nc = normCat(r.cat); if(nc!==r.cat){ r.cat=nc; dirty=true; } }
+    if(migrateLegacySeeds(r)) dirty=true;
+  });
+  if(Array.isArray(state.history)) state.history.forEach(h=>{ if(migrateLegacySeeds(h)) dirty=true; });
+  if(dirty) save();
+  try{ const l = localStorage.getItem(LANGKEY); if(I18N[l]) LANG = l; }catch(e){}
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){ toast(t('tSaveFail')); } }
+
+/* ---------- 篩選邏輯 ---------- */
+function eligible(){ return state.restaurants.filter(r=>!r.excl); }
+function visibleList(){
+  return eligible().filter(r =>
+    (filter.cat==='all' || r.cat===filter.cat) &&
+    (filter.price===0 || r.price===filter.price));
+}
+
+/* ---------- 音效（WebAudio，輕量） ---------- */
+let AC = null;
+function ac(){ if(!AC){ try{ AC = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } return AC; }
+function blip(freq, dur, vol){
+  const a = ac(); if(!a) return;
+  const o = a.createOscillator(), g = a.createGain();
+  o.type='square'; o.frequency.value=freq;
+  g.gain.value=vol;
+  o.connect(g); g.connect(a.destination);
+  const t=a.currentTime;
+  o.start(t); o.stop(t+dur);
+  g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+}
+function tickSnd(){ blip(1500,0.03,0.03); }
+function winSnd(){ blip(880,0.12,0.08); setTimeout(()=>blip(1320,0.18,0.08),90); }
+
+/* ---------- 轉盤繪製 ---------- */
+function hexLuma(hex){
+  const v = hex.replace('#','');
+  const r=parseInt(v.slice(0,2),16), g=parseInt(v.slice(2,4),16), b=parseInt(v.slice(4,6),16);
+  return 0.299*r+0.587*g+0.114*b;
+}
+function draw(){
+  const cssW = wheel.clientWidth, cssH = wheel.clientHeight;
+  const dpr = window.devicePixelRatio||1;
+  if(wheel.width!==Math.round(cssW*dpr)||wheel.height!==Math.round(cssH*dpr)){
+    wheel.width=Math.round(cssW*dpr); wheel.height=Math.round(cssH*dpr);
+  }
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,cssW,cssH);
+  const cx=cssW/2, cy=cssH/2, R=Math.min(cssW,cssH)/2-10;
+  visible = visibleList();
+  const n = visible.length;
+  if(n===0){
+    ctx.save();
+    ctx.translate(cx,cy);
+    ctx.beginPath(); ctx.arc(0,0,R,0,Math.PI*2);
+    ctx.fillStyle='#241b15'; ctx.fill(); ctx.strokeStyle='#3c2e23'; ctx.lineWidth=3; ctx.stroke();
+    const lines = t('lst');
+    ctx.fillStyle='#8a7a63'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.font="900 15px 'Noto Sans TC','Noto Sans SC'";
+    ctx.fillText(lines[0], 0, -10);
+    ctx.fillText(lines[1], 0, 14);
+    ctx.restore();
+    $('wheelHint').textContent = t('wheelHintEmpty');
+    return;
+  }
+  segA = Math.PI*2/n;
+  ctx.save();
+  ctx.translate(cx,cy); ctx.rotate(rot);
+  for(let i=0;i<n;i++){
+    const a0=i*segA, a1=a0+segA;
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0,R,a0,a1); ctx.closePath();
+    ctx.fillStyle=WHEEL_COLORS[i%WHEEL_COLORS.length]; ctx.fill();
+    ctx.strokeStyle='#17110e'; ctx.lineWidth=2; ctx.stroke();
+    const dark = hexLuma(WHEEL_COLORS[i%WHEEL_COLORS.length])>150;
+    const tc = dark ? '#2b1e13' : '#fff8ec';
+    const mid = a0+segA/2;
+    const maxW = Math.max(28, R*0.48);
+    let fs = Math.max(10, Math.min(19, R*0.098));
+    let label = rName(visible[i]);
+    ctx.save();
+    ctx.rotate(mid);
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.font = `900 ${fs}px 'Noto Sans TC','Noto Sans SC'`;
+    while(ctx.measureText(label).width > maxW && fs > 9){
+      fs -= 0.8;
+      ctx.font = `900 ${fs}px 'Noto Sans TC','Noto Sans SC'`;
+    }
+    if(ctx.measureText(label).width > maxW){
+      while(label.length>1 && ctx.measureText(label+'…').width > maxW){ label = label.slice(0,-1); }
+      label += '…';
+    }
+    ctx.fillStyle = tc; ctx.globalAlpha=0.92;
+    ctx.fillText(label, R*0.56, 0);
+    ctx.font = `${fs*1.15}px 'Noto Sans TC'`;
+    ctx.fillText(visible[i].emoji, R*0.86, 0);
+    ctx.restore();
+  }
+  ctx.restore();
+  ctx.save(); ctx.translate(cx,cy);
+  ctx.beginPath(); ctx.arc(0,0,R*0.17,0,Math.PI*2);
+  ctx.fillStyle='#fff3dd'; ctx.strokeStyle='#2b1e13'; ctx.lineWidth=4; ctx.stroke(); ctx.fill();
+  ctx.font=`${R*0.16}px 'Noto Sans TC'`; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('🍽️',0,2);
+  ctx.restore();
+  const filtered = (filter.cat!=='all' || filter.price!==0);
+  $('wheelHint').textContent = `${n} ${t('hintN')}${filtered?t('hintFilter'):''}`;
+}
+
+/* ---------- 旋轉目標計算 ---------- */
+function idxAt(rotation){
+  const n = visible.length; if(!n) return -1;
+  const a = ((-Math.PI/2 - rotation)%(Math.PI*2)+Math.PI*2)%(Math.PI*2);
+  return Math.floor(a/segA)%n;
+}
+function rotTargetFor(idx){
+  const seg = Math.PI*2/visible.length;
+  const phaseTarget = ((-Math.PI/2 - (idx+0.5)*seg)%(Math.PI*2)+Math.PI*2)%(Math.PI*2);
+  const cur = (rot%(Math.PI*2)+Math.PI*2)%(Math.PI*2);
+  let delta = phaseTarget - cur; if(delta<0) delta += Math.PI*2;
+  const jitter = (Math.random()-0.5)*0.7*seg;
+  return rot + Math.PI*2*(4+Math.random()*4) + delta + jitter;
+}
+
+/* ---------- 旋轉動畫 ---------- */
+function spin(targetIdx){
+  if(spinning || visible.length<2){ if(visible.length<2) toast(t('tNeed2')); return; }
+  spinning = true;
+  const btn = $('btnSpin'); btn.disabled = true; btn.textContent = t('spinning');
+  const target = rotTargetFor(targetIdx);
+  const start = performance.now(), dur = 4200, from = rot;
+  let prevIdx = idxAt(from);
+  requestAnimationFrame(function frame(now){
+    const p = Math.min(1,(now-start)/dur);
+    const e = 1-Math.pow(1-p,3);
+    rot = from + (target-from)*e;
+    draw();
+    const curIdx = idxAt(rot);
+    if(curIdx!==prevIdx){ tickSnd(); prevIdx=curIdx; }
+    if(p<1){ requestAnimationFrame(frame); }
+    else{
+      rot = target; draw();
+      spinning = false;
+      btn.disabled=false; btn.textContent = t('spin');
+      const w = visible[curIdx];
+      showResult(w);
+      w.spins = (w.spins||0)+1;
+      state.decided = (state.decided||0)+1;
+      state.history.unshift({k:w.k, name:w.name, emoji:w.emoji, cat:w.cat, ts:Date.now()});
+      state.history = state.history.slice(0,16);
+      save(); renderAll();
+      winSnd();
+    }
+  });
+}
+
+/* ---------- 結果卡 ---------- */
+function showResult(w){
+  lastWinner = w;
+  $('result').style.display = 'flex';
+  $('resEmoji').textContent = w.emoji;
+  $('resName').textContent = rName(w);
+  $('resTags').innerHTML =
+    `<span class="tag cat">${catName(w.cat)}</span>` +
+    `<span class="tag">${'●'.repeat(w.price)}${'○'.repeat(3-w.price)}</span>` +
+    `<span class="tag">${t('winTimes',{n:w.spins+1})}</span>`;
+}
+
+/* ---------- 渲染各區 ---------- */
+function renderCats(){
+  const counts = {};
+  eligible().forEach(r=>{ counts[r.cat]=(counts[r.cat]||0)+1; });
+  const keys = Object.keys(counts).sort();
+  $('catChips').innerHTML = `<button class="chip ${filter.cat==='all'?'on':''}" data-cat="all">🍽️ ${t('all')}<em>${eligible().length}</em></button>`;
+  keys.forEach(c=>{
+    $('catChips').insertAdjacentHTML('beforeend',
+      `<button class="chip ${filter.cat===c?'on':''}" data-cat="${c}">${catName(c)}<em>${counts[c]}</em></button>`);
+  });
+  $('catChips').querySelectorAll('.chip').forEach(b=>{
+    b.onclick = ()=>{ filter.cat = b.dataset.cat; syncPriceChips(); };
+  });
+}
+function syncPriceChips(){
+  document.querySelectorAll('.prices .chip').forEach(c=>{
+    c.classList.toggle('on', Number(c.dataset.p)===filter.price);
+  });
+  renderAll();
+}
+function renderPantry(){
+  const order = filter.cat==='all' ? state.restaurants.slice() : state.restaurants.filter(r=>r.cat===filter.cat);
+  if(state.restaurants.length===0){
+    $('pantry').innerHTML = '<div class="empty">'+t('pantryEmpty')+'</div>';
+  }else{
+    $('pantry').innerHTML = order.map(r=>`
+      <div class="item ${r.excl?'excl':''}" data-id="${r.id}">
+        <div class="ico">${r.emoji}</div>
+        <div class="nm"><b>${rName(r)}</b><span class="meta"><span class="tag" style="margin:0">${catName(r.cat)}</span>${'●'.repeat(r.price)}${'○'.repeat(3-r.price)} · ${t('turn')} ${r.spins||0}</span></div>
+        <button class="x" title="✕">✕</button>
+      </div>`).join('');
+    $('pantry').querySelectorAll('.item').forEach(it=>{
+      it.querySelector('.x').onclick = (e)=>{
+        e.stopPropagation();
+        const id = Number(it.dataset.id);
+        const r = state.restaurants.find(x=>x.id===id);
+        if(confirm(t('delConfirm',{n:rName(r)}))){
+          state.restaurants = state.restaurants.filter(x=>x.id!==id);
+          save(); renderAll(); toast(t('tRemoved'));
+        }
+      };
+    });
+  }
+  const excl = state.restaurants.filter(r=>r.excl);
+  const er = $('exclRow');
+  if(excl.length){
+    er.style.display='flex';
+    er.innerHTML = excl.map(r=>`<span class="tag">👎 ${r.emoji} ${rName(r)}<button data-id="${r.id}">✕</button></span>`).join('');
+    er.querySelectorAll('button').forEach(b=>{
+      b.onclick = ()=>{
+        const id = Number(b.dataset.id);
+        const r = state.restaurants.find(x=>x.id===id); if(r) r.excl=false;
+        save(); renderAll(); toast(t('tRestored'));
+      };
+    });
+  }else{
+    er.style.display='none'; er.innerHTML='';
+  }
+}
+function renderHistory(){
+  const h = $('history');
+  if(state.history.length===0){
+    h.innerHTML = '<div class="empty">'+t('histEmpty')+'</div>';
+    return;
+  }
+  const nm = it => (it.k && I18N[LANG]['seed_'+it.k]) || it.name || '';
+  h.innerHTML = state.history.map(it=>{
+    const d = new Date(it.ts);
+    const hm = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    return `<div class="histchip" title="${t('tHistTip')}"><span>${it.emoji}</span>${nm(it)}<span class="t">${hm}</span></div>`;
+  }).join('');
+  h.querySelectorAll('.histchip').forEach((ch,i)=>{
+    ch.onclick = ()=>{
+      const it = state.history[i];
+      const r = state.restaurants.find(x => (it.k ? x.k===it.k : x.name===it.name) && !x.excl);
+      if(!r){ toast(t('tGone')); return; }
+      const li = visibleList(); const j = li.findIndex(x=>x.id===r.id);
+      if(li.length<2){ toast(t('tNeed2')); return; }
+      removeResult(); spin(j);
+    };
+  });
+}
+function renderStats(){
+  $('stCount').textContent = state.restaurants.length;
+  $('stDecide').textContent = state.decided||0;
+}
+
+/* ---------- 靜態文案（隨語言切換） ---------- */
+function applyLangStatic(){
+  $('logoSub').textContent = t('sub');
+  $('lblRest').textContent = t('lblRest');
+  $('lblDecide').textContent = t('lblDecide');
+  $('btnReset').textContent = t('reset');
+  $('btnReset').setAttribute('title', t('resetTitle'));
+  $('btnSpin').textContent = spinning ? t('spinning') : t('spin');
+  $('btnReroll').textContent = t('reroll');
+  $('resRetry').textContent = t('resRetry');
+  $('resNext').textContent = t('resNext');
+  $('resHate').textContent = t('resHate');
+  $('hExplore').textContent = t('hExplore');
+  $('hList').textContent = t('hList');
+  $('hHist').textContent = t('hHist');
+  $('btnAddNew').textContent = t('addrow');
+  $('ftB').textContent = t('ftB');
+  $('ftTxt').textContent = t('ftTxt');
+  $('mTitle').textContent = t('mTitle');
+  $('mP').textContent = t('mP');
+  $('lblIcon').textContent = t('lblIcon');
+  $('lblName').textContent = t('lblName');
+  $('lblCat').textContent = t('lblCat');
+  $('lblPrice').textContent = t('lblPrice');
+  $('inName').setAttribute('placeholder', t('phName'));
+  $('modalSave').textContent = t('save');
+  $('modalCancel').textContent = t('cancel');
+  const priceTxt = {0:t('priceAll'), 1:t('price1'), 2:t('price2'), 3:t('price3')};
+  document.querySelectorAll('.prices .chip').forEach(c=>{ c.textContent = priceTxt[Number(c.dataset.p)]; });
+  refreshCatSelectOptions();
+  refreshPriceSelectOptions();
+  document.documentElement.lang = LANG==='zh-CN'?'zh-Hans':(LANG==='en'?'en':'zh-Hant');
+  document.title = 'LUNCH·O·MATIC ' + (LANG==='en' ? 'What to eat' : (LANG==='zh-CN'?'午餐吃什么':'午餐吃什麼'));
+  document.querySelectorAll('#langSel button').forEach(b=>{
+    b.classList.toggle('on', b.dataset.lang===LANG);
+  });
+}
+function refreshCatSelectOptions(){
+  const cur = $('inCat').value;
+  const opts = CATS.map(c=>`<option value="${c}" ${c===cur?'selected':''}>${catLongName(c)}</option>`);
+  $('inCat').innerHTML = opts.join('');
+}
+function refreshPriceSelectOptions(){
+  const cur = $('inPrice').value;
+  const vals = {1:t('pv1'), 2:t('pv2'), 3:t('pv3')};
+  $('inPrice').innerHTML = [1,2,3].map(p=>`<option value="${p}" ${String(p)===cur?'selected':''}>${vals[p]}</option>`).join('');
+}
+
+/* ---------- 全域渲染 ---------- */
+function renderAll(){ renderCats(); renderPantry(); renderHistory(); renderStats(); draw(); applyLangStatic(); }
+
+/* ---------- 事件 ---------- */
+let modalEmoji = '🍽️';
+const EMOJIS = ['🍽️','🍱','🍜','🍔','🍗','🍖','🥘','🍛','🥡','🧀','🥩','🍕','🌮','🥗','🥞','🍢','🍧','🥤','🍳','🍲'];
+function openModal(){
+  $('modalBg').classList.add('open');
+  const pick = $('emojiPick');
+  pick.innerHTML = EMOJIS.map(e=>`<button data-e="${e}" class="${e===modalEmoji?'on':''}">${e}</button>`).join('');
+  pick.querySelectorAll('button').forEach(b=>{
+    b.onclick = ()=>{ modalEmoji=b.dataset.e; pick.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); };
+  });
+  $('inCat').value = filter.cat!=='all' ? filter.cat : 'tw';
+  $('inName').value=''; $('inName').focus();
+}
+$('btnSpin').onclick = ()=>{ if(!spinning && visible.length>=2){ removeResult(); spin(Math.floor(Math.random()*visible.length)); } };
+$('btnReroll').onclick = ()=>{
+  if(spinning||visible.length<2){ toast(visible.length<2?t('tNeed2'):t('tSpinWait')); return; }
+  const cur = lastWinner?.id;
+  const pool = visible.filter(r=>r.id!==cur);
+  const pick = pool.length? pool[Math.floor(Math.random()*pool.length)] : visible[Math.floor(Math.random()*visible.length)];
+  const li = visibleList(); const idx = li.findIndex(x=>x.id===pick.id);
+  removeResult(); spin(idx);
+};
+$('resRetry').onclick = ()=>{
+  if(!lastWinner||spinning) return;
+  const li = visibleList(); const idx = li.findIndex(x=>x.id===lastWinner.id);
+  if(idx<0){ toast(t('tFiltered')); return; }
+  removeResult(); spin(idx);
+};
+$('resNext').onclick = $('btnReroll').onclick;
+$('resHate').onclick = ()=>{
+  if(!lastWinner) return;
+  const r = state.restaurants.find(x=>x.id===lastWinner.id);
+  if(r){ r.excl=true; save(); toast(t('tHated',{n:rName(r)})); }
+  removeResult(); renderAll();
+  if(visible.length>=2){ setTimeout(()=>spin(Math.floor(Math.random()*visible.length)),450); }
+};
+$('btnReset').onclick = ()=>{
+  if(!confirm(t('resetConfirm'))) return;
+  localStorage.removeItem(KEY);
+  state = {restaurants:[], history:[], decided:0, lastId:0};
+  load(); renderAll(); removeResult(); toast(t('tReset'));
+};
+$('btnAddNew').onclick = openModal;
+$('modalCancel').onclick = ()=>$('modalBg').classList.remove('open');
+$('modalBg').onclick = e=>{ if(e.target===$('modalBg')) $('modalBg').classList.remove('open'); };
+$('modalSave').onclick = ()=>{
+  const name = $('inName').value.trim();
+  if(!name){ toast(t('tNeedName')); return; }
+  const cat = $('inCat').value;
+  state.restaurants.push({id:newId(), k:null, name, emoji:modalEmoji, cat, price:Number($('inPrice').value), spins:0, excl:false});
+  save(); renderAll(); $('modalBg').classList.remove('open'); toast(t('tAdded',{n:name}));
+};
+document.querySelectorAll('.prices .chip').forEach(c=>{
+  c.onclick = ()=>{ filter.price = Number(c.dataset.p); syncPriceChips(); };
+});
+document.querySelectorAll('#langSel button').forEach(b=>{
+  b.onclick = ()=>{
+    LANG = b.dataset.lang;
+    try{ localStorage.setItem(LANGKEY, LANG); }catch(e){}
+    renderAll();
+  };
+});
+document.addEventListener('keydown', e=>{
+  if(e.code==='Space' && !spinning && !$('modalBg').classList.contains('open')){ e.preventDefault(); $('btnSpin').onclick(); }
+});
+
+/* ---------- Toast ---------- */
+let toastTimer=null;
+function toast(msg){
+  const t=$('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),1800);
+}
+function removeResult(){ $('result').style.display='none'; }
+
+/* ---------- 啟動 ---------- */
+if(document.fonts && document.fonts.ready){ document.fonts.ready.then(()=>{ load(); renderAll(); }); }
+else{ load(); renderAll(); }
+window.addEventListener('resize', draw);
+</script>
+</body>
+</html>

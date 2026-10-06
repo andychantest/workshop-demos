@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>學習分析報告系統</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="vendor/xlsx.full.min.js"></script>
+    <script src="vendor/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>學習分析報告系統</h1>
+            <div class="controls">
+                <label>選擇班級：
+                    <select id="classSelect">
+                        <option value="">載入中...</option>
+                    </select>
+                </label>
+                <label>視角：
+                    <select id="viewMode">
+                        <option value="teacher">老師視角</option>
+                        <option value="student">班級視角（平均）</option>
+                        <option value="individual">個人分析</option>
+                    </select>
+                </label>
+                <select id="studentSelect" style="display:none;">
+                    <option value="">全部學生</option>
+                </select>
+                <button id="generateBtn">生成報告</button>
+            </div>
+        </header>
+
+        <main id="reportArea">
+            <div class="welcome-message">
+                <p>請選擇班級並點擊「生成報告」查看學習分析數據</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

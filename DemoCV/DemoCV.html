@@ -1,0 +1,1787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo CV | Workshop Sample</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --primary: #8b6b4e;
+      --primary-light: #a08060;
+      --accent: #c4834a;
+      --accent-light: #dfa870;
+      --gold: #e3b23c;
+      --gold-light: #f0ce6a;
+      --bg: #f7efe6;
+      --card: #fffaf2;
+      --text: #3d2b1f;
+      --text-light: #5c5c5c;
+      --text-muted: #88807a;
+      --border: #e8ddd0;
+      --sidebar-width: 320px;
+      --shadow: 0 4px 24px rgba(92,58,40,0.08);
+      --radius: 16px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(196,131,74,0.10) 39px, rgba(196,131,74,0.10) 40px),
+        repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(196,131,74,0.10) 39px, rgba(196,131,74,0.10) 40px);
+      color: var(--text);
+      line-height: 1.6;
+      font-size: 15px;
+      position: relative;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(196,131,74,0.10) 0%, transparent 65%);
+      top: -200px;
+      right: -200px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(223,168,112,0.08) 0%, transparent 65%);
+      bottom: -100px;
+      left: -100px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .bg-pattern {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        repeating-conic-gradient(rgba(196,131,74,0.02) 0% 25%, transparent 0% 50%);
+      background-size: 80px 80px;
+    }
+
+    /* Warm decorative dots overlay */
+    .bg-dots {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.30;
+      background-image: radial-gradient(circle, rgba(196,131,74,0.5) 1.5px, transparent 1.5px);
+      background-size: 32px 32px;
+    }
+
+    .app { position: relative; z-index: 1; }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+      gap: 24px;
+    }
+
+    /* ========== SIDEBAR ========== */
+    .sidebar {
+      width: var(--sidebar-width);
+      flex-shrink: 0;
+      background: linear-gradient(165deg, #6b4a34 0%, #7d5840 40%, #8f6650 100%);
+      border-radius: var(--radius);
+      padding: 40px 32px 56px;
+      color: #fff;
+      position: sticky;
+      top: 24px;
+      align-self: flex-start;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      overflow: hidden;
+    }
+
+    .sidebar::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02) 50%, rgba(255,255,255,0.08));
+    }
+
+    .sidebar-decoration {
+      position: absolute;
+      top: 30px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      pointer-events: none;
+      opacity: 0.18;
+    }
+
+    .sidebar-decoration svg { width: 100%; height: 100%; }
+
+    .sidebar::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      background:
+        linear-gradient(135deg, transparent 33.33%, rgba(255,255,255,0.08) 33.33%, rgba(255,255,255,0.08) 66.66%, transparent 66.66%),
+        linear-gradient(45deg, transparent 33.33%, rgba(255,255,255,0.08) 33.33%, rgba(255,255,255,0.08) 66.66%, transparent 66.66%);
+      background-size: 24px 24px;
+      pointer-events: none;
+    }
+
+    .avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-light), var(--accent));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif;
+      color: #fff;
+      margin-bottom: 4px;
+      box-shadow: 0 8px 32px rgba(227,178,60,0.35);
+      position: relative;
+    }
+
+    .avatar-ring {
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      border: 2px solid var(--gold);
+      pointer-events: none;
+    }
+
+    .avatar-ring::before {
+      content: '';
+      position: absolute;
+      inset: 3px;
+      border-radius: 50%;
+      border: 1px dashed var(--gold-light);
+    }
+
+    .divider {
+      text-align: center;
+      position: relative;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .divider::before {
+      content: '';
+      position: absolute;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+    }
+
+    .divider-dot {
+      position: relative;
+      z-index: 2;
+      background: var(--bg);
+      padding: 0 16px;
+      color: var(--gold);
+      font-size: 11px;
+      opacity: 0.35;
+      letter-spacing: 4px;
+    }
+
+    .divider-dot span {
+      display: inline-block;
+      animation: dividerPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes dividerPulse {
+      0%, 100% { opacity: 0.35; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.1); }
+    }
+
+    .sidebar-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1.15;
+      margin-top: 8px;
+    }
+
+    .sidebar-name span {
+      display: block;
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--gold);
+      margin-top: 2px;
+    }
+
+    .sidebar-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .sidebar-tag {
+      padding: 4px 14px;
+      border-radius: 50px;
+      background: linear-gradient(135deg, rgba(227,178,60,0.12), rgba(255,255,255,0.05));
+      border: 1px solid rgba(227,178,60,0.25);
+      font-size: 12px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.9);
+    }
+
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 12px;
+    }
+
+    .sidebar .section-label { color: rgba(255,255,255,0.35); }
+
+    .contact-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .contact-item:hover { color: var(--gold); }
+
+    .contact-item svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      color: var(--accent);
+    }
+
+    .skill-group { margin-bottom: 16px; }
+
+    .skill-group:last-child { margin-bottom: 0; }
+
+    .skill-group-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 6px;
+    }
+
+    .skill-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .skill-item {
+      padding: 4px 12px;
+      border-radius: 6px;
+      background: rgba(223,168,112,0.1);
+      border: 1px solid rgba(223,168,112,0.15);
+      font-size: 12px;
+      color: rgba(255,255,255,0.9);
+      position: relative;
+    }
+
+    .skill-item::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--gold-light);
+      margin-right: 5px;
+      vertical-align: middle;
+      opacity: 0.5;
+    }
+
+    .lang-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .lang-item:last-child { border-bottom: none; }
+
+    .lang-name-sb {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .lang-level-sb {
+      font-size: 12px;
+      color: var(--gold);
+      font-weight: 500;
+    }
+
+    /* ========== MAIN ========== */
+    .main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 40px 44px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-top-bar {
+      position: absolute;
+      top: 0;
+      left: 44px;
+      right: 44px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-light), transparent);
+      border-radius: 0 0 3px 3px;
+      z-index: 1;
+    }
+
+    .card-corner {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      pointer-events: none;
+      opacity: 0.30;
+    }
+
+    .card-corner--tl {
+      top: 12px;
+      left: 12px;
+      border-top: 2px solid var(--gold);
+      border-left: 2px solid var(--accent);
+      border-radius: 4px 0 0 0;
+    }
+
+    .card-corner--br {
+      bottom: 12px;
+      right: 12px;
+      border-bottom: 2px solid var(--gold);
+      border-right: 2px solid var(--accent);
+      border-radius: 0 0 4px 0;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(196,131,74,0.12), rgba(223,168,112,0.08));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .card-icon svg {
+      width: 20px;
+      height: 20px;
+      color: var(--accent);
+    }
+
+    .card-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .card-title::after {
+      content: '';
+      display: block;
+      width: 30px;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 2px;
+      margin-top: 6px;
+      opacity: 0.5;
+    }
+
+    .card-subtitle {
+      font-size: 13px;
+      color: var(--text-light);
+    }
+
+    /* About */
+    .about-text p {
+      color: var(--text-light);
+      font-size: 14px;
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+
+    .about-text p:last-child { margin-bottom: 0; }
+
+    /* Experience Timeline */
+    .timeline { position: relative; }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 16px;
+      top: 14px;
+      bottom: 14px;
+      width: 1px;
+      background: repeating-linear-gradient(
+        to bottom,
+        var(--gold) 0px,
+        var(--gold) 3px,
+        transparent 3px,
+        transparent 10px
+      );
+      opacity: 0.55;
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-left: 0;
+      padding-bottom: 32px;
+    }
+
+    .timeline-item:last-child { padding-bottom: 0; }
+
+    .timeline-dot {
+      display: none;
+    }
+
+    .timeline-dot::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--card);
+    }
+
+    .timeline-date {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gold);
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .timeline-org {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .timeline-role {
+      font-size: 14px;
+      color: var(--text-light);
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .timeline-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .timeline-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gold);
+      text-decoration: none;
+      margin-top: 8px;
+    }
+
+    .timeline-link:hover { text-decoration: underline; }
+
+    /* Education */
+    .edu-item {
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .edu-item:first-child { padding-top: 0; }
+
+    .edu-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+    .edu-date {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gold);
+    }
+
+    .edu-school {
+      font-size: 14px;
+      color: var(--text-light);
+    }
+
+    .edu-grades {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 24px;
+    }
+
+    .edu-grade {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--text-light);
+      padding: 3px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .edu-grade-score {
+      font-weight: 600;
+      color: var(--gold);
+    }
+
+    .contact-item svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      color: var(--gold);
+    }
+
+    /* Portfolio Links */
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .portfolio-card {
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #fffaf2, #fdf5ec);
+      border: 1px solid var(--border);
+      text-decoration: none;
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .portfolio-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        linear-gradient(135deg, rgba(196,131,74,0.08), transparent 50%),
+        repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 6px,
+          rgba(196,131,74,0.03) 6px,
+          rgba(196,131,74,0.03) 7px
+        );
+      pointer-events: none;
+    }
+
+    .portfolio-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 4px 20px rgba(227,178,60,0.15);
+      transform: translateY(-2px);
+    }
+
+    .portfolio-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--gold);
+      width: 18px;
+      height: 18px;
+      color: #fff;
+    }
+
+    .portfolio-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .portfolio-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 32px 0 8px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .footer a { color: var(--accent); text-decoration: none; }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 900px) {
+      .app { flex-direction: column; padding: 16px; gap: 16px; }
+      .sidebar {
+        width: 100%;
+        position: static;
+        padding: 32px 28px;
+      }
+      .sidebar-decoration { display: none; }
+      .card { padding: 28px 24px; }
+      .card-top-bar { left: 24px; right: 24px; }
+      .card-corner { display: none; }
+      .portfolio-grid { grid-template-columns: 1fr; }
+      .bg-dots { background-size: 24px 24px; }
+    }
+
+    @media (max-width: 600px) {
+      .edu-grades { grid-template-columns: 1fr; }
+      .app { padding: 12px; gap: 12px; }
+      .sidebar { padding: 24px 20px; }
+      .sidebar::after { display: none; }
+      .card { padding: 24px 20px; }
+      .card-top-bar { left: 20px; right: 20px; }
+      .card-header { margin-bottom: 20px; }
+      .avatar { width: 80px; height: 80px; font-size: 32px; }
+      .avatar-ring { display: none; }
+      .sidebar-name { font-size: 22px; }
+    }
+
+    /* ========== v2.0 NEW: i18n Switcher ========== */
+    .lang-switcher {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 1000;
+      display: flex;
+      background: rgba(255, 250, 242, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 4px;
+      box-shadow: 0 4px 16px rgba(92, 58, 40, 0.12);
+      gap: 2px;
+    }
+
+    .lang-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      letter-spacing: 0.5px;
+    }
+
+    .lang-btn:hover { color: var(--accent); }
+
+    .lang-btn.active {
+      background: linear-gradient(135deg, var(--accent), var(--accent-light));
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(196, 131, 74, 0.35);
+    }
+
+    body.lang-zh {
+      font-family: 'Noto Sans TC', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* ========== v2.0 NEW: Status Badge ========== */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      margin-top: 12px;
+      border-radius: 50px;
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05));
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      font-size: 12px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.95);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+      animation: statusPulse 2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes statusPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+      50% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+    }
+
+    /* ========== v2.0 NEW: Entry & Scroll Animations ========== */
+    .app { opacity: 0; }
+    .app.ready { opacity: 1; }
+
+    .sidebar {
+      opacity: 0;
+      transform: translateX(-30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .sidebar.in-view {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .main {
+      opacity: 0;
+      transform: translateX(30px);
+      transition: opacity 0.8s ease 0.2s, transform 0.8s ease 0.2s;
+    }
+
+    .main.in-view {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .animate-on-scroll {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .animate-on-scroll.in-view {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .animate-on-scroll:nth-child(1) { transition-delay: 0.05s; }
+    .animate-on-scroll:nth-child(2) { transition-delay: 0.15s; }
+    .animate-on-scroll:nth-child(3) { transition-delay: 0.25s; }
+    .animate-on-scroll:nth-child(4) { transition-delay: 0.35s; }
+    .animate-on-scroll:nth-child(5) { transition-delay: 0.45s; }
+    .animate-on-scroll:nth-child(6) { transition-delay: 0.55s; }
+
+    /* ========== v2.0 NEW: Skill Progress Bars ========== */
+    .skill-item {
+      position: relative;
+      overflow: hidden;
+      min-width: 90px;
+      text-align: center;
+    }
+
+    .skill-item::before {
+      z-index: 1;
+    }
+
+    .skill-item-label {
+      position: relative;
+      z-index: 2;
+    }
+
+    .skill-item::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: var(--level, 0%);
+      background: linear-gradient(90deg, rgba(227, 178, 60, 0.18), rgba(227, 178, 60, 0.05));
+      transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .skill-item.in-view::after { width: var(--level); }
+
+    /* ========== v2.0 NEW: Stats Data Wall ========== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 32px;
+      padding: 24px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(196, 131, 74, 0.06), rgba(223, 168, 112, 0.03));
+      border: 1px solid var(--border);
+    }
+
+    .stats-item {
+      text-align: center;
+      position: relative;
+    }
+
+    .stats-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      right: -8px;
+      top: 20%;
+      bottom: 20%;
+      width: 1px;
+      background: var(--border);
+    }
+
+    .stats-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+      display: block;
+    }
+
+    .stats-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    /* ========== v2.0 NEW: Timeline Icons ========== */
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      align-items: start;
+    }
+
+    .timeline-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(196, 131, 74, 0.15), rgba(223, 168, 112, 0.08));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+      margin-top: -4px;
+    }
+
+    .timeline-icon svg {
+      width: 16px;
+      height: 16px;
+      color: var(--accent);
+    }
+
+    .timeline-content {
+      min-width: 0;
+    }
+
+    /* ========== v2.0 NEW: Language Progress Bars ========== */
+    .lang-item {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 6px;
+    }
+
+    .lang-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .lang-bar {
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .lang-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+      border-radius: 2px;
+      width: 0%;
+      transition: width 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .lang-bar-fill.in-view { width: var(--level, 100%); }
+
+    /* ========== v2.0 NEW: 3D Card Tilt ========== */
+    .portfolio-card {
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    /* ========== v3.0 NEW: Download Resume Buttons ========== */
+    button {
+      font-family: inherit;
+    }
+
+    .contact-item.dl-btn-sidebar {
+      width: 100%;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      color: #4a350f;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 16px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      box-shadow: 0 4px 16px rgba(227, 178, 60, 0.35);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      text-align: left;
+    }
+
+    .contact-item.dl-btn-sidebar:hover {
+      color: #4a350f;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 22px rgba(227, 178, 60, 0.5);
+    }
+
+    .contact-item.dl-btn-sidebar svg { color: #4a350f; }
+
+    button.portfolio-card.dl-portfolio-btn {
+      width: 100%;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      text-align: left;
+      font-family: inherit;
+    }
+
+    button.portfolio-card.dl-portfolio-btn:hover {
+      border-color: var(--gold);
+      box-shadow: 0 4px 24px rgba(227, 178, 60, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .dl-fab {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 26px;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold) 55%, var(--accent));
+      color: #3d2b1f;
+      font-family: 'Space Grotesk', 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 10px 34px rgba(196, 131, 74, 0.45);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(16px);
+      transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s ease, box-shadow 0.25s ease;
+    }
+
+    .dl-fab.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .dl-fab svg {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
+    .dl-fab:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 14px 40px rgba(196, 131, 74, 0.55);
+    }
+
+    .dl-fab:active { transform: translateY(-1px) scale(1.01); }
+
+    @media (max-width: 600px) {
+      .dl-fab { right: 16px; bottom: 16px; padding: 13px 20px; font-size: 14px; }
+    }
+
+    /* ========== v3.0 NEW: Print Styles (同 HTML 版式 • 一頁 A4) ========== */
+    @media print {
+      @page { size: A4 portrait; margin: 8mm; }
+
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+      html, body { background: #fff !important; }
+
+      body {
+        background: #fff !important;
+        background-image: none !important;
+        color: #000 !important;
+        font-size: 8.5pt;
+        line-height: 1.35;
+      }
+
+      body::before, body::after,
+      .bg-dots, .bg-pattern,
+      .sidebar-decoration,
+      .card-top-bar, .card-corner,
+      .lang-switcher, .dl-fab,
+      .divider, .card::before {
+        display: none !important;
+      }
+
+      /* 強制顯示所有動畫元素、取消位移 */
+      .app, .sidebar, .main,
+      .animate-on-scroll, .skill-item, .lang-item, .portfolio-card {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+
+      .app {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 7pt;
+        max-width: none;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* ===== 側欄 33%：保留棕色漸層，與畫面一致 ===== */
+      .sidebar {
+        width: 33%;
+        min-width: 0;
+        position: static;
+        align-self: flex-start;
+        padding: 11pt 12pt 9pt;
+        background: linear-gradient(165deg, #6b4a34 0%, #7d5840 40%, #8f6650 100%) !important;
+        color: #fff !important;
+        border-radius: 8pt;
+        box-shadow: none;
+        gap: 12pt;
+      }
+      .sidebar::before, .sidebar::after { display: none !important; }
+
+      .avatar { width: 48pt; height: 48pt; font-size: 22pt; margin-bottom: 2pt; }
+      .avatar-ring { display: none !important; }
+
+      .sidebar-name { font-size: 15pt; }
+      .sidebar-name span { font-size: 9pt; }
+
+      .status-badge { font-size: 7pt; padding: 3px 9px; margin-top: 8px; }
+
+      .sidebar-tags { gap: 4px; margin-top: 8px !important; }
+      .sidebar-tag { font-size: 7pt; padding: 2px 8px; }
+
+      .section-label { font-size: 6.5pt !important; letter-spacing: 1.5px; margin-bottom: 4pt; }
+
+      .contact-item { font-size: 7.5pt; gap: 6pt; }
+      .contact-item svg { width: 10px; height: 10px; color: var(--gold) !important; }
+      .contact-item.dl-btn-sidebar { display: none !important; }
+
+      .skill-group { margin-bottom: 6pt; }
+      .skill-group-title { font-size: 6.5pt; margin-bottom: 3pt; }
+      .skill-items { gap: 3px; }
+      .skill-item { font-size: 7pt; padding: 1px 5px; min-width: 0; width: auto; }
+      .skill-item::after { display: none; }
+      .skill-item::before { opacity: 0.6; }
+
+      .lang-item { padding: 2px 0; gap: 2px; }
+      .lang-name-sb { font-size: 7.5pt; }
+      .lang-level-sb { font-size: 6.5pt; }
+      .lang-bar { height: 3px; }
+
+      /* ===== 主內容 67%：白底卡片依序排列 ===== */
+      .main {
+        width: 67%;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6pt;
+      }
+
+      .card {
+        padding: 9pt 11pt;
+        margin: 0;
+        border-radius: 8pt;
+        background: #fff !important;
+        box-shadow: none !important;
+        page-break-inside: avoid;
+      }
+
+      .card-header { margin-bottom: 5pt; gap: 8pt; }
+      .card-icon { width: 20pt; height: 20pt; border-radius: 6pt; }
+      .card-icon svg { width: 11px; height: 11px; }
+      .card-title { font-size: 11.5pt; color: #6b4a34 !important; }
+      .card-title::after { display: none; }
+      .card-subtitle { font-size: 7.5pt; }
+
+      .about-text p { font-size: 8pt; line-height: 1.42; margin-bottom: 5pt; color: #333 !important; }
+
+      .stats-grid {
+        margin-top: 6pt;
+        padding: 6pt 8pt;
+        gap: 4pt;
+        border-radius: 6pt;
+      }
+      .stats-number { font-size: 14pt; }
+      .stats-label { font-size: 6pt; letter-spacing: 1px; }
+      .stats-item:not(:last-child)::after { opacity: 0.5; }
+
+      .timeline::before { display: none !important; }
+      .timeline-item {
+        display: grid;
+        grid-template-columns: 16pt 1fr;
+        align-items: start;
+        gap: 5pt;
+        padding-left: 0 !important;
+        padding-bottom: 6pt;
+        page-break-inside: avoid;
+      }
+      .timeline-item:last-child { padding-bottom: 0; }
+      .timeline-icon { width: 16pt; height: 16pt; margin-top: 0; }
+      .timeline-icon svg { width: 9px; height: 9px; }
+      .timeline-date { font-size: 7pt; margin-bottom: 1pt; }
+      .timeline-org { font-size: 9.5pt; color: #6b4a34 !important; }
+      .timeline-role { font-size: 7.5pt; margin-bottom: 1pt; }
+      .timeline-desc { font-size: 7pt; line-height: 1.35; color: #333 !important; }
+      .timeline-link { font-size: 7pt; margin-top: 1pt; }
+
+      .edu-item { padding: 4pt 0; }
+      .edu-date { font-size: 7pt; }
+      .edu-degree { font-size: 8.5pt; }
+      .edu-school { font-size: 7.5pt; }
+      .edu-grades { margin-top: 3pt; grid-template-columns: 1fr 1fr; gap: 0 8pt; }
+      .edu-grade { font-size: 7pt; padding: 0.5px 0; }
+
+      .portfolio-grid { grid-template-columns: repeat(4, 1fr); gap: 4pt; }
+      .portfolio-card {
+        padding: 5pt;
+        border-radius: 6pt;
+        background: #fff !important;
+        border: 1px solid #e0d5c8 !important;
+        page-break-inside: avoid;
+      }
+      .portfolio-card::after { display: none; }
+      .portfolio-icon { width: 12px; height: 12px; border-radius: 4pt; }
+      .portfolio-icon svg { width: 12px; height: 12px; }
+      .portfolio-name { font-size: 7pt; }
+      .portfolio-desc { font-size: 6pt; margin-top: 0; color: #666 !important; }
+      button.portfolio-card.dl-portfolio-btn { display: none !important; }
+
+      .footer { font-size: 7pt; padding: 2pt 0 0; }
+
+      a { color: #000 !important; text-decoration: none; }
+      a[href]::after { content: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-dots"></div>
+
+  <!-- v3.0 Download Resume Floating Button -->
+  <button type="button" class="dl-fab" onclick="printResume()" aria-label="Download Resume">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    <span data-en="Download Resume" data-zh="下載履歷 PDF">Download Resume</span>
+  </button>
+
+  <!-- v2.0 Language Switcher -->
+  <div class="lang-switcher" role="group" aria-label="Language switcher">
+    <button class="lang-btn active" data-lang="en" type="button" aria-label="English">EN</button>
+    <button class="lang-btn" data-lang="zh" type="button" aria-label="繁體中文">中</button>
+  </div>
+
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-decoration">
+        <svg viewBox="0 0 60 60" fill="none" stroke="rgba(227,178,60,0.6)" stroke-width="1.5">
+          <path d="M0 60 L30 0 L60 60"/>
+          <path d="M15 60 L30 20 L45 60"/>
+          <path d="M5 60 L30 10 L55 60"/>
+        </svg>
+      </div>
+      <div class="avatar">ML<div class="avatar-ring"></div></div>
+
+      <div>
+        <div class="sidebar-name">Lin Mei Ya<span>Mia</span></div>
+        <div class="status-badge">
+          <span class="status-dot"></span>
+          <span data-en="Available for work" data-zh="可接案 / 求職中">Available for work</span>
+        </div>
+        <div class="sidebar-tags" style="margin-top:12px">
+          <span class="sidebar-tag" data-en="Graphic Designer" data-zh="平面設計師">Graphic Designer</span>
+          <span class="sidebar-tag" data-en="Photographer" data-zh="攝影師">Photographer</span>
+          <span class="sidebar-tag" data-en="Editor" data-zh="剪輯師">Editor</span>
+          <span class="sidebar-tag" data-en="Matte Painter" data-zh="數位繪景師">Matte Painter</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label" data-en="Contact" data-zh="聯絡">Contact</div>
+        <div class="contact-list">
+          <a href="tel:+85251234567" class="contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.9a16 16 0 0 0 6 6l1.06-1.06a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21.16 15"/></svg>
+            +852 5123 4567
+          </a>
+          <a href="mailto:mia.lin.demo@example.com" class="contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            mia.lin.demo@example.com
+          </a>
+          <a href="https://example.com/mia-lin-demo" target="_blank" class="contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span data-en="Portfolio Website" data-zh="作品集網站">Portfolio Website</span>
+          </a>
+          <button type="button" class="contact-item dl-btn-sidebar" onclick="printResume()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <span data-en="Download Resume" data-zh="下載履歷 PDF">Download Resume</span>
+          </button>
+      </div>
+
+      <div>
+        <div class="section-label" data-en="Skills" data-zh="技能">Skills</div>
+        <div class="skill-group">
+          <div class="skill-group-title" data-en="Confident" data-zh="熟練">Confident</div>
+          <div class="skill-items">
+            <span class="skill-item" data-level="95">Photoshop</span>
+            <span class="skill-item" data-level="92">Illustrator</span>
+            <span class="skill-item" data-level="88">InDesign</span>
+            <span class="skill-item" data-level="90">Clip Studio Paint</span>
+            <span class="skill-item" data-level="85">After Effects</span>
+            <span class="skill-item" data-level="88">Premiere Pro</span>
+            <span class="skill-item" data-level="80">Maya</span>
+            <span class="skill-item" data-level="82">Substance Painter</span>
+            <span class="skill-item" data-level="85">UI/UX</span>
+            <span class="skill-item" data-level="80">WordPress</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-group-title" data-en="Competent" data-zh="熟悉">Competent</div>
+          <div class="skill-items">
+            <span class="skill-item" data-level="75">MS Word</span>
+            <span class="skill-item" data-level="78">MS Excel</span>
+            <span class="skill-item" data-level="72">MS PowerPoint</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-group-title" data-en="Comfortable" data-zh="尚可">Comfortable</div>
+          <div class="skill-items">
+            <span class="skill-item" data-level="55">Windows</span>
+            <span class="skill-item" data-level="50">macOS</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label" data-en="Languages" data-zh="語言能力">Languages</div>
+        <div>
+          <div class="lang-item" data-level="100">
+            <div class="lang-header">
+              <span class="lang-name-sb" data-en="Cantonese" data-zh="廣東話">Cantonese</span>
+              <span class="lang-level-sb" data-en="Native" data-zh="母語">Native</span>
+            </div>
+            <div class="lang-bar"><div class="lang-bar-fill"></div></div>
+          </div>
+          <div class="lang-item" data-level="90">
+            <div class="lang-header">
+              <span class="lang-name-sb" data-en="English" data-zh="英語">English</span>
+              <span class="lang-level-sb" data-en="Fluent" data-zh="流利">Fluent</span>
+            </div>
+            <div class="lang-bar"><div class="lang-bar-fill"></div></div>
+          </div>
+          <div class="lang-item" data-level="90">
+            <div class="lang-header">
+              <span class="lang-name-sb" data-en="Putonghua" data-zh="普通話">Putonghua</span>
+              <span class="lang-level-sb" data-en="Fluent" data-zh="流利">Fluent</span>
+            </div>
+            <div class="lang-bar"><div class="lang-bar-fill"></div></div>
+          </div>
+          <div class="lang-item" data-level="70">
+            <div class="lang-header">
+              <span class="lang-name-sb" data-en="Japanese" data-zh="日語">Japanese</span>
+              <span class="lang-level-sb" data-en="Proficient" data-zh="精通">Proficient</span>
+            </div>
+            <div class="lang-bar"><div class="lang-bar-fill"></div></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <!-- About -->
+      <section class="card animate-on-scroll">
+        <div class="card-top-bar"></div>
+        <div class="card-corner card-corner--tl"></div>
+        <div class="card-corner card-corner--br"></div>
+        <div class="card-header">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div>
+            <div class="card-title" data-en="About Me" data-zh="關於我">About Me</div>
+            <div class="card-subtitle" data-en="Creative professional with a passion for visual storytelling" data-zh="熱愛視覺敘事的創意工作者">Creative professional with a passion for visual storytelling</div>
+          </div>
+        </div>
+        <div class="about-text">
+          <p data-en="With a background in Animation and Visual Effects from Central City University, I bring a multidisciplinary skill set spanning graphic design, photography, video editing, and digital matte painting." data-zh="畢業於中央城市大學動畫及視覺特效系，擁有平面設計、攝影、影片剪輯及數位繪景的多元技能組合。">With a background in Animation and Visual Effects from Central City University, I bring a multidisciplinary skill set spanning graphic design, photography, video editing, and digital matte painting.</p>
+          <p data-en="Currently working as Creative Designer at Nova Media Ltd., I handle brand design, video editing, animation making, and photography across creative projects. Prior to this, I gained valuable experience in education, post-production, and matte painting roles that have shaped my versatile creative career." data-zh="現任 Nova Media Ltd. 創意設計師，負責品牌設計、影片剪輯、動畫製作及攝影工作。過去曾於教育、影視後期及數位繪景等領域深耕，累積了豐富的跨領域創作經驗。">Currently working as Creative Designer at Nova Media Ltd., I handle brand design, video editing, animation making, and photography across creative projects. Prior to this, I gained valuable experience in education, post-production, and matte painting roles that have shaped my versatile creative career.</p>
+        </div>
+
+        <!-- Stats Data Wall -->
+        <div class="stats-grid">
+          <div class="stats-item">
+            <span class="stats-number" data-target="5" data-suffix="+">0</span>
+            <span class="stats-label" data-en="Years" data-zh="年經驗">Years</span>
+          </div>
+          <div class="stats-item">
+            <span class="stats-number" data-target="4" data-suffix="">0</span>
+            <span class="stats-label" data-en="Languages" data-zh="語言">Languages</span>
+          </div>
+          <div class="stats-item">
+            <span class="stats-number" data-target="10" data-suffix="+">0</span>
+            <span class="stats-label" data-en="Tools" data-zh="工具">Tools</span>
+          </div>
+          <div class="stats-item">
+            <span class="stats-number" data-target="30" data-suffix="+">0</span>
+            <span class="stats-label" data-en="Projects" data-zh="專案">Projects</span>
+          </div>
+        </div>
+      </section>
+
+      <div class="divider"><span class="divider-dot"><span>✦</span> ─ <span>◇</span> ─ <span>✦</span></span></div>
+
+      <!-- Experience -->
+      <section class="card animate-on-scroll">
+        <div class="card-top-bar"></div>
+        <div class="card-corner card-corner--tl"></div>
+        <div class="card-corner card-corner--br"></div>
+        <div class="card-header">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          </div>
+          <div>
+            <div class="card-title" data-en="Experience" data-zh="工作經驗">Experience</div>
+            <div class="card-subtitle" data-en="5 years of professional experience" data-zh="5 年專業經驗">5 years of professional experience</div>
+          </div>
+        </div>
+        <div class="timeline">
+          <div class="timeline-item animate-on-scroll">
+            <div class="timeline-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 8-6 4 6 4V8Z"/><rect x="2" y="6" width="14" height="12" rx="2" ry="2"/></svg>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-date" data-en="Jan 2023 — Present" data-zh="2023 年 1 月 — 至今">Jan 2023 — Present</div>
+              <div class="timeline-org">Nova Media Ltd.</div>
+              <div class="timeline-role" data-en="Creative Designer" data-zh="創意設計師">Creative Designer</div>
+              <div class="timeline-desc" data-en="Responsible for brand design, video editing, animation making, and photography." data-zh="負責品牌設計、影片剪輯、動畫製作及攝影。">Responsible for brand design, video editing, animation making, and photography.</div>
+              <a href="https://example.com/mia-lin-demo" target="_blank" class="timeline-link" data-en="View Design Portfolio →" data-zh="查看設計作品 →">View Design Portfolio →</a>
+            </div>
+          </div>
+          <div class="timeline-item animate-on-scroll">
+            <div class="timeline-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-date" data-en="Aug 2022 — Dec 2022" data-zh="2022 年 8 月 — 12 月">Aug 2022 — Dec 2022</div>
+              <div class="timeline-org">Bright Future Education Centre</div>
+              <div class="timeline-role" data-en="Teaching Assistant" data-zh="教學助理">Teaching Assistant</div>
+              <div class="timeline-desc" data-en="Responsible for admin work, video editing, and photography." data-zh="負責行政工作、影片剪輯及攝影。">Responsible for admin work, video editing, and photography.</div>
+              <a href="https://example.com/mia-multimedia" target="_blank" class="timeline-link" data-en="View Multimedia Portfolio →" data-zh="查看多媒體作品 →">View Multimedia Portfolio →</a>
+            </div>
+          </div>
+          <div class="timeline-item animate-on-scroll">
+            <div class="timeline-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-date" data-en="Sep 2018 — Jul 2022" data-zh="2018 年 9 月 — 2022 年 7 月">Sep 2018 — Jul 2022</div>
+              <div class="timeline-org">Metro Arts College</div>
+              <div class="timeline-role" data-en="Academic Support Officer" data-zh="學術支援主任">Academic Support Officer</div>
+              <div class="timeline-desc" data-en="Responsible for admin work, video editing, graphic design, and animation." data-zh="負責行政工作、影片剪輯、平面設計及動畫。">Responsible for admin work, video editing, graphic design, and animation.</div>
+            </div>
+          </div>
+          <div class="timeline-item animate-on-scroll">
+            <div class="timeline-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-date" data-en="Apr 2018 — Aug 2018" data-zh="2018 年 4 月 — 8 月">Apr 2018 — Aug 2018</div>
+              <div class="timeline-org">Studio Verde Productions</div>
+              <div class="timeline-role" data-en="Digital Matte Artist" data-zh="數位繪景師">Digital Matte Artist</div>
+              <div class="timeline-desc" data-en="Responsible for creating digital matte paintings — virtual backgrounds used to replace or embellish live action photographed plates." data-zh="負責製作數位繪景（Matte Painting）—— 用於取代或美化實景拍攝畫面的虛擬背景。">Responsible for creating digital matte paintings — virtual backgrounds used to replace or embellish live action photographed plates.</div>
+            </div>
+          </div>
+          <div class="timeline-item animate-on-scroll">
+            <div class="timeline-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-date" data-en="Jun 2017 — Jul 2017" data-zh="2017 年 6 月 — 7 月">Jun 2017 — Jul 2017</div>
+              <div class="timeline-org">City Media Network</div>
+              <div class="timeline-role" data-en="Video Editor" data-zh="影片剪輯師">Video Editor</div>
+              <div class="timeline-desc" data-en="Responsible for video post-production and film editing." data-zh="負責影片後期製作及剪輯。">Responsible for video post-production and film editing.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="divider"><span class="divider-dot"><span>◇</span> ─ <span>◆</span> ─ <span>◇</span></span></div>
+
+      <!-- Education -->
+      <section class="card animate-on-scroll">
+        <div class="card-top-bar"></div>
+        <div class="card-corner card-corner--tl"></div>
+        <div class="card-corner card-corner--br"></div>
+        <div class="card-header">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          </div>
+          <div>
+            <div class="card-title" data-en="Education" data-zh="學歷">Education</div>
+            <div class="card-subtitle" data-en="Academic background & qualifications" data-zh="學術背景與資格">Academic background & qualifications</div>
+          </div>
+        </div>
+
+        <div class="edu-item">
+          <div class="edu-date" data-en="Aug 2015 — Sep 2019" data-zh="2015 年 8 月 — 2019 年 9 月">Aug 2015 — Sep 2019</div>
+          <div class="edu-degree" data-en="Animation and Visual Effects" data-zh="動畫及視覺特效">Animation and Visual Effects</div>
+          <div class="edu-school">Central City University</div>
+        </div>
+        <div class="edu-item">
+          <div class="edu-date" data-en="Sep 2009 — Mar 2015" data-zh="2009 年 9 月 — 2015 年 3 月">Sep 2009 — Mar 2015</div>
+          <div class="edu-degree" data-en="Hong Kong Diploma of Secondary Education Examination" data-zh="香港中學文憑考試 (HKDSE)">Hong Kong Diploma of Secondary Education Examination</div>
+          <div class="edu-school">Grandview College</div>
+          <div class="edu-grades">
+            <div class="edu-grade"><span data-en="Chinese Language" data-zh="中國語文">Chinese Language</span><span class="edu-grade-score" data-en="Level 3" data-zh="第 3 級">Level 3</span></div>
+            <div class="edu-grade"><span data-en="English Language" data-zh="英國語文">English Language</span><span class="edu-grade-score" data-en="Level 3" data-zh="第 3 級">Level 3</span></div>
+            <div class="edu-grade"><span data-en="Mathematics" data-zh="數學">Mathematics</span><span class="edu-grade-score" data-en="Level 3" data-zh="第 3 級">Level 3</span></div>
+            <div class="edu-grade"><span data-en="Liberal Studies" data-zh="通識教育">Liberal Studies</span><span class="edu-grade-score" data-en="Level 4" data-zh="第 4 級">Level 4</span></div>
+            <div class="edu-grade"><span data-en="Visual Arts" data-zh="視覺藝術">Visual Arts</span><span class="edu-grade-score" data-en="Level 3" data-zh="第 3 級">Level 3</span></div>
+            <div class="edu-grade"><span data-en="Business, Accounting & Financial Studies" data-zh="企業、會計與財務概論">Business, Accounting &amp; Financial Studies</span><span class="edu-grade-score" data-en="Level 3" data-zh="第 3 級">Level 3</span></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="divider"><span class="divider-dot"><span>✦</span> ─ <span>◆</span> ─ <span>✦</span></span></div>
+
+      <!-- Portfolio -->
+      <section class="card animate-on-scroll">
+        <div class="card-top-bar"></div>
+        <div class="card-corner card-corner--tl"></div>
+        <div class="card-corner card-corner--br"></div>
+        <div class="card-header">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+          </div>
+          <div>
+            <div class="card-title" data-en="Portfolio & Media" data-zh="作品集與媒體">Portfolio & Media</div>
+            <div class="card-subtitle" data-en="View my work across different platforms" data-zh="在多個平台查看我的作品">View my work across different platforms</div>
+          </div>
+        </div>
+        <div class="portfolio-grid">
+          <a href="https://example.com/mia-showreel" target="_blank" class="portfolio-card animate-on-scroll">
+            <div class="portfolio-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+            </div>
+            <div class="portfolio-name" data-en="ShowReel" data-zh="動態作品集">ShowReel</div>
+            <div class="portfolio-desc" data-en="View my animation & motion reel" data-zh="觀看我的動畫及動態作品">View my animation & motion reel</div>
+          </a>
+          <a href="https://example.com/mia-design" target="_blank" class="portfolio-card animate-on-scroll">
+            <div class="portfolio-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </div>
+            <div class="portfolio-name" data-en="Design Portfolio" data-zh="設計作品集">Design Portfolio</div>
+            <div class="portfolio-desc" data-en="Graphic design & creative works" data-zh="平面設計與創意作品">Graphic design & creative works</div>
+          </a>
+          <a href="https://example.com/mia-multimedia" target="_blank" class="portfolio-card animate-on-scroll">
+            <div class="portfolio-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </div>
+            <div class="portfolio-name" data-en="Multimedia Portfolio" data-zh="多媒體作品集">Multimedia Portfolio</div>
+            <div class="portfolio-desc" data-en="Video editing & multimedia projects" data-zh="影片剪輯與多媒體專案">Video editing & multimedia projects</div>
+          </a>
+          <a href="https://example.com/mia-behance" target="_blank" class="portfolio-card animate-on-scroll">
+            <div class="portfolio-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+            </div>
+            <div class="portfolio-name">Behance</div>
+            <div class="portfolio-desc" data-en="Connect with me professionally" data-zh="專業社群連結">Connect with me professionally</div>
+          </a>
+          <button type="button" class="portfolio-card dl-portfolio-btn animate-on-scroll" onclick="printResume()">
+            <div class="portfolio-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            </div>
+            <div class="portfolio-name" data-en="Download Resume" data-zh="下載履歷">Download Resume</div>
+            <div class="portfolio-desc" data-en="Get a PDF copy of my resume" data-zh="下載 PDF 履歷">Get a PDF copy of my resume</div>
+          </button>
+      </section>
+
+      <footer class="footer">
+        <p data-en="© 2024 Mia Lin (Demo). Built with ❤" data-zh="© 2024 林美雅 (Demo). 以 ❤ 製作">&copy; 2024 Mia Lin (Demo). Built with <span style="color:var(--accent)">&#9829;</span></p>
+      </footer>
+
+    </main>
+  </div>
+
+  <!-- v2.0 Scripts -->
+  <script>
+    (function() {
+      'use strict';
+
+      const STORAGE_KEY = 'demo-cv-lang';
+
+      // ===== 1. i18n Language Switcher =====
+      function setLang(lang) {
+        if (lang !== 'en' && lang !== 'zh') lang = 'en';
+        document.documentElement.lang = lang === 'zh' ? 'zh-Hant' : 'en';
+        document.body.classList.toggle('lang-zh', lang === 'zh');
+
+        document.querySelectorAll('[data-en]').forEach(el => {
+          const text = el.getAttribute('data-' + lang);
+          if (text !== null && text !== undefined) {
+            el.textContent = text;
+          }
+        });
+
+        document.querySelectorAll('[data-placeholder-en]').forEach(el => {
+          const text = el.getAttribute('data-placeholder-' + lang);
+          if (text) el.setAttribute('placeholder', text);
+        });
+
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.lang === lang);
+          btn.setAttribute('aria-pressed', btn.dataset.lang === lang ? 'true' : 'false');
+        });
+
+        try { localStorage.setItem(STORAGE_KEY, lang); } catch (e) {}
+        document.dispatchEvent(new CustomEvent('langchange', { detail: { lang } }));
+      }
+
+      function initLang() {
+        let saved = 'en';
+        try {
+          saved = localStorage.getItem(STORAGE_KEY) || 'en';
+        } catch (e) { saved = 'en'; }
+        setLang(saved);
+      }
+
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => setLang(btn.dataset.lang));
+      });
+
+      // ===== 2. IntersectionObserver (Scroll Animations) =====
+      const animObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            animObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+      function observeAnimateOnScroll() {
+        document.querySelectorAll('.animate-on-scroll, .sidebar, .main, .portfolio-card, .skill-item, .lang-item').forEach(el => {
+          if (!el.classList.contains('in-view')) animObserver.observe(el);
+        });
+      }
+
+      // 設定 skill-item 和 lang-item 的 --level CSS 變數
+      function initSkillLevels() {
+        document.querySelectorAll('.skill-item[data-level]').forEach(el => {
+          const level = el.getAttribute('data-level');
+          if (level) el.style.setProperty('--level', level + '%');
+        });
+        document.querySelectorAll('.lang-item[data-level]').forEach(el => {
+          const level = el.getAttribute('data-level');
+          const fill = el.querySelector('.lang-bar-fill');
+          if (level && fill) fill.style.setProperty('--level', level + '%');
+        });
+      }
+
+      // ===== 3. Counter Animation =====
+      function animateCounter(el) {
+        if (el.dataset.counted === '1') return;
+        el.dataset.counted = '1';
+        const target = parseInt(el.dataset.target, 10) || 0;
+        const suffix = el.dataset.suffix || '';
+        const duration = 1600;
+        const start = performance.now();
+        function step(now) {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          el.textContent = Math.floor(target * eased) + suffix;
+          if (progress < 1) requestAnimationFrame(step);
+          else el.textContent = target + suffix;
+        }
+        requestAnimationFrame(step);
+      }
+
+      const counterObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            animateCounter(entry.target);
+            counterObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.5 });
+
+      function observeCounters() {
+        document.querySelectorAll('.stats-number[data-target]').forEach(el => {
+          counterObserver.observe(el);
+        });
+      }
+
+      // ===== 4. 3D Card Tilt =====
+      function init3DTilt() {
+        const cards = document.querySelectorAll('.portfolio-card');
+        cards.forEach(card => {
+          card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width - 0.5;
+            const y = (e.clientY - rect.top) / rect.height - 0.5;
+            card.style.transform =
+              'perspective(1000px) rotateY(' + (x * 8) + 'deg) rotateX(' + (-y * 8) + 'deg) translateY(-3px)';
+          });
+          card.addEventListener('mouseleave', () => {
+            card.style.transform = '';
+          });
+        });
+      }
+
+      // ===== 5. Entry Animation =====
+      function triggerEntryAnimation() {
+        const app = document.querySelector('.app');
+        if (app) {
+          requestAnimationFrame(() => app.classList.add('ready'));
+        }
+        requestAnimationFrame(() => {
+          const sb = document.querySelector('.sidebar');
+          const mn = document.querySelector('.main');
+          if (sb) sb.classList.add('in-view');
+          if (mn) mn.classList.add('in-view');
+        });
+      }
+
+      // ===== 6. Download / Print Resume =====
+      function printResume() {
+        // 確保列印前所有捲動動畫皆已觸發，避免內容被隱藏
+        const app = document.querySelector('.app');
+        if (app) app.classList.add('ready');
+        document.querySelectorAll('.animate-on-scroll, .sidebar, .main, .portfolio-card, .skill-item, .lang-item').forEach(el => {
+          el.classList.add('in-view');
+        });
+        // 計數器直接寫入最終值，避免 PDF 中出現 0
+        document.querySelectorAll('.stats-number[data-target]').forEach(el => {
+          if (el.dataset.counted !== '1') {
+            el.textContent = (el.dataset.target || 0) + (el.dataset.suffix || '');
+          }
+        });
+        window.print();
+      }
+
+      window.printResume = printResume;
+
+      // ===== 7. Download FAB 智慧顯示（網頁內按鈕看不見時才出現） =====
+      function initDownloadFab() {
+        const fab = document.querySelector('.dl-fab');
+        const targets = document.querySelectorAll('.dl-btn-sidebar, .dl-portfolio-btn');
+        if (!fab || targets.length === 0) return;
+
+        let ticking = false;
+        function update() {
+          ticking = false;
+          const anyVisible = Array.prototype.some.call(targets, function (t) {
+            const r = t.getBoundingClientRect();
+            return r.top < window.innerHeight && r.bottom > 0;
+          });
+          fab.classList.toggle('show', !anyVisible);
+        }
+        function onScroll() {
+          if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(update);
+          }
+        }
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onScroll);
+        update();
+      }
+
+      // ===== Init =====
+      function init() {
+        initLang();
+        initSkillLevels();
+        observeAnimateOnScroll();
+        observeCounters();
+        init3DTilt();
+        triggerEntryAnimation();
+        initDownloadFab();
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    })();
+  </script>
+</body>
+</html>
