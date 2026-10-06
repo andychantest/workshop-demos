@@ -2,7 +2,7 @@
 
 ## 專案概述
 
-- **用途**：工作坊現場示範用網站的入口封面頁。頁面上方為 Hero 標題區，下方為 5 張 Demo 卡片按鈕，點擊即開啟對應的 Demo。
+- **用途**：工作坊現場示範用網站的入口封面頁。頁面上方為 Hero 標題區，下方為 6 張 Demo 卡片按鈕，點擊即開啟對應的 Demo。
 - **目標使用者**：工作坊講師／助教（現場操作投影）、參與學員（自行瀏覽）。
 - **技術棧**：原生 HTML5 + CSS3 + JavaScript，無框架、無建置步驟、無後端。
 - **設計方向**：「Workshop Console」工業控制台風格 — 近黑底、藍圖細格、訊號琥珀與電光青雙主色、工業角標、卡片等高排列。
@@ -40,8 +40,12 @@ Demo/
 ├── LunchWheelDemo/           # Demo 04 午餐轉盤
 │   ├── index.html            # 單檔（內嵌 CSS/JS）
 │   └── projectdocument.md
-└── TripPlannerDemo/          # Demo 05 班級旅行企劃
-    └── index.html            # 單檔（內嵌 CSS/JS）
+├── TripPlannerDemo/          # Demo 05 班級旅行企劃
+│   └── index.html            #   單檔（內嵌 CSS/JS）
+└── Scratch Method/            # Demo 06 k-NN 分類器視覺化
+    ├── index.html            #   單檔（側欄控制台 + SVG 畫布 + 說明框）
+    ├── style.css             #   淺色主題、SVG 點/線/動畫樣式、窄螢幕堆疊
+    └── script.js             #   30 點隨機資料、歐氏距離、k 近鄰搜尋、投票分類、四步動畫
 ```
 
 ### 檔名與路徑的關鍵限制
@@ -49,6 +53,7 @@ Demo/
 | 項目 | 值 | 原因 |
 |------|-----|------|
 | `LA Project` 資料夾名 | **保留空格** | 使用者決定不更動既有結構；URL 須編碼為 `LA%20Project/` |
+| `Scratch Method` 資料夾名 | **保留空格** | 同上；URL 須編碼為 `Scratch%20Method/` |
 | `DemoCV` 入口檔 | `DemoCV.html`（非 `index.html`） | 與其他 Demo 不同，連結須直接指到檔名 |
 | 卡片 href | **一律相對路徑** | GitHub Pages 部署於 `/workshop-demos/` 子路徑，絕對路徑會失效 |
 
@@ -66,7 +71,7 @@ Demo/
 | `sectionTitle` / `sectionHint` | 卡片區標題與操作說明 |
 | `cta` | 卡片按鈕文字 |
 | `footer1` / `footerSig` | 頁尾兩行 |
-| `demos[]` | **5 張卡片各自的** `label` / `title` / `subtitle` / `tags[]` / `desc` |
+| `demos[]` | **6 張卡片各自的** `label` / `title` / `subtitle` / `tags[]` / `desc` |
 
 **套用流程**（`setLang()` → `applyText()`）：
 
@@ -110,22 +115,22 @@ Demo/
 
 | 手段 | 說明 |
 |------|------|
-| `.grid { grid-auto-rows: 1fr; }` | 5 張卡片在 3 欄會分成 3+2 兩列；`1fr` 讓**兩列等高**，否則第二列會依內容另算高度 |
+| `.grid { grid-auto-rows: 1fr; }` | 卡片數決定分列方式（6 張在桌面為 3 欄 × 2 列整齊排列）；`1fr` 讓**各列等高**，否則後面的列會依內容另算高度 |
 | `.card { height: 100%; min-height: 452px; }` | 撐滿列高，並設定下限避免單欄（手機）時過扁 |
 | `.card__tags { margin: auto 0 22px; }` | 標籤列的 `margin-top: auto` 吸收剩餘空間，**所有卡片的下半部（技術標籤 + 開啟按鈕）都對齊在同一水平線** |
 | 移除 `.card:nth-child(even) { margin-top: 38px }` | 原本的交錯斜向排列會讓偶數卡片的實際高度少 38px，是「大小不一致」的主因 |
 
-**實測結果**（5 種視窗 × 3 種語言 = 15 組）：
+**實測結果**（5 種視窗 × 3 種語言 = 15 組，每組 6 張卡片）：
 
-| 視窗 | 繁中 | 簡中 | English |
-|------|------|------|---------|
-| 1920×1080 | 497.5px | 495.5px | 523.6px |
-| 1440×900 | 497.5px | 495.5px | 523.6px |
-| 1180×820 | 497.5px | 495.5px | 523.6px |
-| 820×1000（雙欄） | 464.5px | 462.5px | 493.1px |
-| 390×844（單欄） | 497.5px | 462.5px | 493.1px |
+| 視窗 | 欄數 | 繁中 | 簡中 | English |
+|------|------|------|------|---------|
+| 1920×1080 | 3 | 497.5px | 495.5px | 587.1px |
+| 1440×900 | 3 | 497.5px | 495.5px | 587.1px |
+| 1180×820 | 3 | 497.5px | 495.5px | 556.6px |
+| 820×1000 | 2 | 464.5px | 462.5px | 521.1px |
+| 390×844 | 1 | 497.5px | 462.5px | 556.6px |
 
-每一組內的 5 張卡片高度與寬度皆完全相同。英文版略高，因英文字串較長、可容納行數較多。同一語言切換視窗時高度會微調（欄寬改變導致行數變化），這是內容自適應的正常結果。
+每一組內的 6 張卡片高度與寬度皆完全相同。英文版較高，因英文字串較長、可容納行數較多。同一語言切換視窗時高度會微調（欄寬改變導致行數變化），這是內容自適應的正常結果。
 
 ### 4. 進場動畫（revealOnScroll）
 
@@ -139,8 +144,9 @@ Demo/
 ### 5. 互動與版面
 
 - **開啟方式**：`target="_blank"` + `rel="noopener"`。現場示範時切到新分頁，關閉分頁即回到封面，不會迷失。
-- **鍵盤可及性**：語言按鈕與卡片皆為原生 `<button>` / `<a>`，Tab 順序為「三顆語言按鈕 → 五張卡片 → 回到頁首」，Enter 皆可操作。語言按鈕 `:focus-visible` 為青色外框。
+- **鍵盤可及性**：語言按鈕與卡片皆為原生 `<button>` / `<a>`，Tab 順序為「三顆語言按鈕 → 六張卡片 → 回到頁首」，Enter 皆可操作。語言按鈕 `:focus-visible` 為青色外框。
 - **語言按鈕**：`.langbtn[aria-pressed="true"]` 以琥珀色實底反白，使用 `aria-pressed` 而非 class 切換，螢幕閱讀器可正確播報目前語言。
+- **kicker 長度**：英文版第 6 張的 kicker 為 `MACHINE LEARNING / 06`，實測寬 289–309px，在各視窗的卡片內容寬度（290–311px）內皆不會溢出。
 - **響應式**：`repeat(auto-fit, minmax(292px, 1fr))`；≤640px 時語言按鈕縮小為 11.5px 以免撐出橫向捲動。
 
 ### 6. 字體與字級
@@ -173,6 +179,7 @@ Demo/
 | 03 LA Project | **不行，需 HTTP** | `app.js` 以 `fetch('./Data/Class 1/…csv')` 讀資料，`file://` 下會被 CORS 擋下並顯示「無法載入數據」 |
 | 04 午餐轉盤 | 可以 | 單檔 + localStorage |
 | 05 旅行企劃 | 可以 | 單檔 + localStorage |
+| 06 k-NN 視覺化 | 可以 | 純 SVG + JS，無任何外部依賴 |
 
 本機示範建議：`cd Demo` 後執行 `python -m http.server 8000`。
 
@@ -198,3 +205,4 @@ Demo/
 | `20261006a` | 初版封面頁：Hero + 5 張交錯排列卡片 |
 | `20261006b` | 修正 `Syne 800` 大標造成的橫向捲動（字級改為 `min(8.2vw, 100px)`）、縮小 Hero 高度 |
 | `20261006c` | 新增繁中／簡中／English 三語介面（`localStorage` 記憶）；全面放大字級；卡片改為等高排列（`grid-auto-rows: 1fr`、移除交錯位移、標籤列 `margin-top: auto` 對齊） |
+| `20261006d` | 新增 Demo 06「k-NN 分類器視覺化」（`Scratch Method/`，連結 `Scratch%20Method/index.html`）；同步補上三個語言包文案。修正該 Demo 在 ≤760px 視窗的橫向溢出（`#main-container` 改為垂直堆疊、SVG 改 `width:100%`） |

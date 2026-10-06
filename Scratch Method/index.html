@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>k-NN Explained: An Interactive Guide</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>k-NN Explained: An Interactive Guide</h1>
+
+    <div id="main-container">
+        <div id="controls-panel">
+            <p>Click on the white canvas to add a new point to be classified.</p>
+            <div class="control-group">
+                <label for="k-value">1. Set the Number of Neighbors (k): </label>
+                <input type="number" id="k-value" value="3" min="1" max="15">
+            </div>
+            <div id="legend">
+                <h3>Legend</h3>
+                <p><span class="legend-color class-a"></span> Class 'A'</p>
+                <p><span class="legend-color class-b"></span> Class 'B'</p>
+                <p><span class="legend-color new-point-legend"></span> New Point (to be classified)</p>
+            </div>
+            <button id="reset-button">Reset Visualization</button>
+        </div>
+
+        <div id="visualization-area">
+            <svg id="visualization-canvas"></svg>
+            <div id="explanation-box">
+                <p>Waiting for you to add a new point...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>

@@ -10,7 +10,8 @@ const DEMOS = [
   { href: 'english-vocab-demo/index.html', icon: '📚', accent: '#3de0d0' },
   { href: 'LA%20Project/index.html', icon: '📊', accent: '#e8ff59' },
   { href: 'LunchWheelDemo/index.html', icon: '🍱', accent: '#ff4d6d' },
-  { href: 'TripPlannerDemo/index.html', icon: '🧭', accent: '#7fb2ff' }
+  { href: 'TripPlannerDemo/index.html', icon: '🧭', accent: '#7fb2ff' },
+  { href: 'Scratch%20Method/index.html', icon: '🧠', accent: '#c77dff' }
 ];
 
 const LANGS = ['zh-Hant', 'zh-Hans', 'en'];
@@ -41,7 +42,9 @@ const ZH_HANT = {
     { label: '決策', title: 'LUNCH·O·MATIC 午餐轉盤', subtitle: '今天午餐吃什麼', tags: ['Canvas 動畫', 'WebAudio 音效', '三語介面'],
       desc: 'Canvas 抽籤轉盤解決午餐選擇困難。可依分類與價格篩選，並永久刪除不喜歡的店，繁中／簡中／英文三語切換。' },
     { label: '規劃', title: 'Trip Planner 班級旅行企劃', subtitle: '班級去哪裡玩', tags: ['拖曳看板', '預算統計', '自動儲存'],
-      desc: '拖曳式行程看板，自動依偏好分配隊伍與統計預算。所有調整即時存入瀏覽器，重新整理計畫仍在。' }
+      desc: '拖曳式行程看板，自動依偏好分配隊伍與統計預算。所有調整即時存入瀏覽器，重新整理計畫仍在。' },
+    { label: '機器學習', title: 'k-NN 分類器視覺化', subtitle: 'K 近鄰演算法', tags: ['SVG 動畫', '機器學習', '互動教學'],
+      desc: '在畫布上點一下新增一個點，程式即時計算 k 個最近鄰居、拉出連線、統計投票並完成分類，用四步動畫把 k-NN 演算法拆開講清楚。' }
   ]
 };
 
@@ -69,7 +72,9 @@ const ZH_HANS = {
     { label: '决策', title: 'LUNCH·O·MATIC 午餐转盘', subtitle: '今天午饭吃什么', tags: ['Canvas 动画', 'WebAudio 音效', '三语界面'],
       desc: 'Canvas 抽奖转盘解决午饭选择困难。可依分类与价格筛选，并永久删除不喜欢的店，繁中／简中／英文三语切换。' },
     { label: '规划', title: 'Trip Planner 班级旅行企划', subtitle: '班级去哪里玩', tags: ['拖曳看板', '预算统计', '自动保存'],
-      desc: '拖曳式行程看板，自动依偏好分配队伍与统计预算。所有调整即时存入浏览器，重新整理计划仍在。' }
+      desc: '拖曳式行程看板，自动依偏好分配队伍与统计预算。所有调整即时存入浏览器，重新整理计划仍在。' },
+    { label: '机器学习', title: 'k-NN 分类器可视化', subtitle: 'K 近邻算法', tags: ['SVG 动画', '机器学习', '互动教学'],
+      desc: '在画布上点一下新增一个点，程序即时计算 k 个最近邻居、拉出连线、统计投票并完成分类，用四步动画把 k-NN 算法拆开讲清楚。' }
   ]
 };
 
@@ -97,7 +102,9 @@ const EN = {
     { label: 'Decision', title: 'LUNCH·O·MATIC Spinner', subtitle: 'What Should I Eat?', tags: ['Canvas', 'WebAudio', 'Trilingual'],
       desc: 'A canvas spinning wheel that settles the lunch dilemma. Filter by category and price, drop the places you dislike, in three languages.' },
     { label: 'Planning', title: 'Class Trip Planner', subtitle: 'Where To Go?', tags: ['Drag & Drop', 'Budget', 'Auto-save'],
-      desc: 'A drag-and-drop itinerary board that assigns groups and tallies the budget automatically. Every change is saved to your browser instantly.' }
+      desc: 'A drag-and-drop itinerary board that assigns groups and tallies the budget automatically. Every change is saved to your browser instantly.' },
+    { label: 'Machine Learning', title: 'k-NN Classifier Visualized', subtitle: 'K-Nearest Neighbors', tags: ['SVG Animation', 'Step-by-step', 'No Backend'],
+      desc: 'Click the canvas to drop a new point. It computes the k nearest neighbours, draws the links, tallies their votes and classifies the point — the whole algorithm in four animated steps.' }
   ]
 };
 

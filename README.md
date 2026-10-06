@@ -13,6 +13,7 @@
 | 03 | 學習儀表板 LA Project | `LA Project/index.html` | CSV/XLSX 解析、Chart.js 圖表、三種報告視圖 |
 | 04 | LUNCH·O·MATIC 午餐轉盤 | `LunchWheelDemo/index.html` | Canvas 動畫、WebAudio 音效、三語系 |
 | 05 | Trip Planner 班級旅行企劃 | `TripPlannerDemo/index.html` | 拖曳看板、預算統計、localStorage |
+| 06 | k-NN 分類器視覺化 | `Scratch Method/index.html` | SVG 動畫、k 近鄰演算法四步驟視覺化 |
 
 ## 結構
 
@@ -25,7 +26,8 @@ Demo/
 ├── english-vocab-demo/  # 02 單字學習圖鑑
 ├── LA Project/     # 03 學習儀表板
 ├── LunchWheelDemo/ # 04 午餐轉盤
-└── TripPlannerDemo/ # 05 班級旅行企劃
+├── TripPlannerDemo/ # 05 班級旅行企劃
+└── Scratch Method/ # 06 k-NN 分類器視覺化
 ```
 
 ## 本機執行
@@ -66,7 +68,7 @@ python -m http.server 8000
 
 ## 設計說明
 
-封面頁採「Workshop Console」工業控制台風格：近黑底 `#08090B` 配上藍圖細格與 SVG 雜訊底片，主色為訊號琥珀 `#FF7A18` 與電光青 `#3DE0D0`，標題用 Syne、標籤用 Chivo Mono、中文內文用 Noto Sans TC（簡中自動切換為 Noto Sans SC）。格線以 `grid-auto-rows: 1fr` 讓 3+2 兩列等高，卡片的下半部靠 `margin-top: auto` 對齊，**五張方塊完全同高同寬**。hover 時頂部光掃、邊框發光並微微上浮。
+封面頁採「Workshop Console」工業控制台風格：近黑底 `#08090B` 配上藍圖細格與 SVG 雜訊底片，主色為訊號琥珀 `#FF7A18` 與電光青 `#3DE0D0`，標題用 Syne、標籤用 Chivo Mono、中文內文用 Noto Sans TC（簡中自動切換為 Noto Sans SC）。六張卡片以 `grid-auto-rows: 1fr` 讓每列等高，卡片的下半部靠 `margin-top: auto` 對齊，**六張方塊完全同高同寬**；桌面 1080p 為 3 欄 × 2 列整齊排列。hover 時頂部光掃、邊框發光並微微上浮。
 
 字級已放大：卡片標題 25px、卡片說明 16.5px、Hero 內文最大 21px、統計數字 42px。
 
